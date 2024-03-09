@@ -16,8 +16,7 @@ import static org.lwjgl.opengl.GL33C.*;
  *
  * @author Anton Schoenfeld
  */
-public class Buffer implements AutoCloseable {
-    private final int id;
+public class Buffer extends OpenGLObject {
     private final int bufferType;
 
     /**
@@ -26,12 +25,8 @@ public class Buffer implements AutoCloseable {
      * @param type The OpenGL buffer type.
      */
     public Buffer(Type type) {
-        id = glGenBuffers();
+        super(glGenBuffers());
         this.bufferType = type.getGlConstant();
-    }
-
-    public int getId() {
-        return id;
     }
 
     /**

@@ -1,6 +1,7 @@
 package org.nebula.graphics.globjects;
 
 import lombok.Getter;
+import org.lwjgl.opengl.GL33C;
 import org.nebula.graphics.data.ByteBufferedImage;
 
 import java.io.IOException;
@@ -25,8 +26,8 @@ import static org.lwjgl.system.MemoryUtil.NULL;
  * @since 07.03.2024
  */
 @Getter
-public class Texture implements AutoCloseable {
-    private final int id, width, height, channels;
+public class Texture extends OpenGLObject {
+    private final int width, height, channels;
 
     /**
      * Constructs a blank texture with the specified width and height.
@@ -35,7 +36,7 @@ public class Texture implements AutoCloseable {
      * @param height The height of the texture.
      */
     public Texture(int width, int height) {
-        this.id = glGenTextures();
+        super(glGenTextures());
         this.width = width;
         this.height = height;
         this.channels = 3;
@@ -87,7 +88,7 @@ public class Texture implements AutoCloseable {
      * @param useAntiAliasing Flag indicating whether to use anti-aliasing.
      */
     public Texture(final ByteBufferedImage image, boolean useAntiAliasing) {
-        id = glGenTextures();
+        super(glGenTextures());
         glBindTexture(GL_TEXTURE_2D, id);
 
         // Set texture parameters

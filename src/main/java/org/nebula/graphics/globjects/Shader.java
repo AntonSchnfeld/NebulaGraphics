@@ -35,11 +35,9 @@ import static org.lwjgl.opengl.GL33C.*;
  * @see Matrix3f
  * @see Matrix4f
  */
-public class Shader implements AutoCloseable {
+public class Shader extends OpenGLObject {
     @Getter
     private static Shader currentlyBoundShader;
-    @Getter
-    private final int id;
     private final HashMap<String, Integer> uniformLocations;
 
     /**
@@ -49,9 +47,8 @@ public class Shader implements AutoCloseable {
      * @param fragmentSource the source code for the fragment shader
      */
     public Shader(final String vertexSource, final String fragmentSource) {
+        super(glCreateProgram());
         uniformLocations = new HashMap<>();
-
-        id = glCreateProgram();
 
         final int vertexShader = glCreateShader(GL_VERTEX_SHADER);
         final int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);

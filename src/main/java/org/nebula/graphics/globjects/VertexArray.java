@@ -16,23 +16,19 @@ import static org.lwjgl.opengl.GL33C.*;
  * @author Anton Schoenfeld
  * @since 07.03.2025
  */
-public class VertexArray implements AutoCloseable {
+public class VertexArray extends OpenGLObject {
 
     /**
      * The currently bound VertexArray, used to avoid redundant OpenGL API calls.
      */
     private static VertexArray current;
 
-    /**
-     * The OpenGL identifier for the VertexArray.
-     */
-    public final int id;
 
     /**
      * Constructs a new VertexArray and generates an OpenGL Vertex Array Object (VAO).
      */
     public VertexArray() {
-        this.id = glGenVertexArrays();
+        super(glGenVertexArrays());
     }
 
     /**

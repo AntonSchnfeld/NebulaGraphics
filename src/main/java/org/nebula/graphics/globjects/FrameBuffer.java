@@ -5,19 +5,18 @@ import lombok.Getter;
 import static org.lwjgl.opengl.GL33C.*;
 
 @Getter
-public class FrameBuffer implements AutoCloseable {
-    private final int id;
+public class FrameBuffer extends OpenGLObject {
     private final Texture texture;
     private final int renderBuffer;
 
     public FrameBuffer(int width, int height) {
-        this.id = glGenFramebuffers();
+        super(glGenFramebuffers());
 
         glBindFramebuffer(GL_FRAMEBUFFER, id);
 
         texture = new Texture(width, height);
 
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture.getId(), 0);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture.id, 0);
         texture.unbind();
 
         this.renderBuffer = glGenRenderbuffers();
