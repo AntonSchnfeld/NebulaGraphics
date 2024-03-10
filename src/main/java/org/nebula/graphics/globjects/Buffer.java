@@ -1,5 +1,7 @@
 package org.nebula.graphics.globjects;
 
+import lombok.Getter;
+
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
@@ -140,6 +142,7 @@ public class Buffer extends OpenGLObject {
      * Enum representing different buffer usage patterns, specifying how the data will be accessed and modified.
      * Each enum constant corresponds to an OpenGL constant for buffer usage.
      */
+    @Getter
     public enum Usage {
         DYNAMIC_DRAW(GL_DYNAMIC_DRAW),
         DYNAMIC_COPY(GL_DYNAMIC_COPY),
@@ -151,22 +154,21 @@ public class Buffer extends OpenGLObject {
         STREAM_COPY(GL_STREAM_COPY),
         STREAM_READ(GL_STREAM_READ);
 
+        /**
+         * -- GETTER --
+         *  Get the OpenGL constant associated with the buffer usage pattern.
+         *
+         * @return The OpenGL constant for the buffer usage.
+         */
         private final int glConstant;
 
         Usage(int glConstant) {
             this.glConstant = glConstant;
         }
 
-        /**
-         * Get the OpenGL constant associated with the buffer usage pattern.
-         *
-         * @return The OpenGL constant for the buffer usage.
-         */
-        public int getGlConstant() {
-            return glConstant;
-        }
     }
 
+    @Getter
     public enum Type {
         ARRAY_BUFFER(GL_ARRAY_BUFFER),
         ELEMENT_ARRAY_BUFFER(GL_ELEMENT_ARRAY_BUFFER);
@@ -177,11 +179,9 @@ public class Buffer extends OpenGLObject {
             this.glConstant = glConstant;
         }
 
-        public int getGlConstant() {
-            return glConstant;
-        }
     }
 
+    @Getter
     public enum Datatype {
         FLOAT(GL_FLOAT, Float.BYTES),
         UNSIGNED_INT(GL_UNSIGNED_INT, Integer.BYTES),
@@ -198,16 +198,9 @@ public class Buffer extends OpenGLObject {
             this.glConstant = glConstant;
             this.bytes = bytes;
         }
-
-        public int getGlConstant() {
-            return glConstant;
-        }
-
-        public int getBytes() {
-            return bytes;
-        }
     }
 
+    @Getter
     public enum ReadPolicy {
 
         READ_ONLY(GL_READ_ONLY),
@@ -220,8 +213,5 @@ public class Buffer extends OpenGLObject {
             this.glConstant = glConstant;
         }
 
-        public int getGlConstant() {
-            return glConstant;
-        }
     }
 }
