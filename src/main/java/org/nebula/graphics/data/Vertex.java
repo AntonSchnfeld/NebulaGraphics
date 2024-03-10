@@ -8,7 +8,7 @@ import org.nebula.util.Poolable;
 
 /**
  * The {@code Vertex} class represents a vertex in three-dimensional space and contains information
- * such as position, normal, and texture coordinates. This class is designed to be used in graphics
+ * on the position, normal, and texture coordinates. This class is designed to be used in graphics
  * applications and is a record, immutable by default.
  *
  * <p>It implements the {@link Poolable} interface, allowing instances to be efficiently managed by a
