@@ -156,7 +156,7 @@ public class Buffer extends OpenGLObject {
 
         /**
          * -- GETTER --
-         *  Get the OpenGL constant associated with the buffer usage pattern.
+         * Get the OpenGL constant associated with the buffer usage pattern.
          *
          * @return The OpenGL constant for the buffer usage.
          */

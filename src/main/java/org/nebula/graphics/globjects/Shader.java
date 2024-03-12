@@ -27,13 +27,13 @@ import static org.lwjgl.opengl.GL33C.*;
  * </p>
  *
  * @author Anton Schoenfeld
- * @since 07.03.2024
  * @see Vector2f
  * @see Vector3f
  * @see Vector4f
  * @see Matrix2f
  * @see Matrix3f
  * @see Matrix4f
+ * @since 07.03.2024
  */
 public class Shader extends OpenGLObject {
     @Getter
