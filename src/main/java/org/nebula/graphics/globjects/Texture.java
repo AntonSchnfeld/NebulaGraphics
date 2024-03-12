@@ -1,11 +1,7 @@
 package org.nebula.graphics.globjects;
 
 import lombok.Getter;
-import org.lwjgl.opengl.GL33C;
 import org.nebula.graphics.data.ByteBufferedImage;
-
-import java.io.IOException;
-import java.net.URL;
 
 import static org.lwjgl.opengl.GL33C.*;
 import static org.lwjgl.system.MemoryUtil.NULL;
@@ -27,84 +23,87 @@ import static org.lwjgl.system.MemoryUtil.NULL;
  */
 @Getter
 public class Texture extends OpenGLObject {
-    private final int width, height, channels;
+    /**
+     * The dimensions (width and height) of the texture.
+     */
+    private final TextureDimensions dimensions;
 
     /**
-     * Constructs a blank texture with the specified width and height.
-     *
-     * @param width  The width of the texture.
-     * @param height The height of the texture.
+     * The filter parameters for texture sampling.
      */
-    public Texture(int width, int height) {
+    private final TextureFilter filter;
+
+    /**
+     * The configuration parameters for texture creation.
+     */
+    private final TextureConfig config;
+
+    /**
+     * Constructs a Texture with the specified dimensions, filter, and configuration.
+     *
+     * @param dimensions The dimensions (width and height) of the texture.
+     * @param filter     The filter parameters for texture sampling.
+     * @param config     The configuration parameters for texture creation.
+     */
+    public Texture(TextureDimensions dimensions, TextureFilter filter, TextureConfig config) {
         super(glGenTextures());
-        this.width = width;
-        this.height = height;
-        this.channels = 3;
+        this.dimensions = dimensions;
+        this.config = config;
+        this.filter = filter;
 
         bind();
         glTexImage2D(
-                GL_TEXTURE_2D, 0, GL_RGB, width, height, 0,
-                GL_RGB, GL_UNSIGNED_BYTE, NULL
+                GL_TEXTURE_2D, config.mipMapLevel(), config.format(), dimensions.width(), dimensions.height(), 0,
+                config.format(), config.texelDataType(), NULL
         );
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter.minFilter());
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter.magFilter());
         unbind();
     }
 
     /**
-     * Constructs a texture by loading an image from the specified URL.
+     * Constructs a Texture with the specified dimensions and default filter and configuration.
      *
-     * @param url The URL of the image to load.
-     * @throws IOException If an I/O error occurs during image loading.
+     * @param dimensions The dimensions (width and height) of the texture.
      */
-    public Texture(URL url) throws IOException {
-        this(url, false);
+    public Texture(TextureDimensions dimensions) {
+        this(dimensions, new TextureFilter(), new TextureConfig());
     }
 
     /**
-     * Constructs a texture by loading an image from the specified URL, with an option for anti-aliasing.
+     * Constructs a Texture from the provided image with the specified filter and configuration.
      *
-     * @param url             The URL of the image to load.
-     * @param useAntiAliasing Flag indicating whether to use anti-aliasing.
-     * @throws IOException If an I/O error occurs during image loading.
+     * @param image  The image data used to create the texture.
+     * @param filter The filter parameters for texture sampling.
+     * @param config The configuration parameters for texture creation.
      */
-    public Texture(URL url, boolean useAntiAliasing) throws IOException {
-        this(ByteBufferedImage.fromURL(url), useAntiAliasing);
-    }
-
-    /**
-     * Constructs a texture from a ByteBufferedImage.
-     *
-     * @param image The ByteBufferedImage containing the image data.
-     */
-    public Texture(final ByteBufferedImage image) {
-        this(image, false);
-    }
-
-    /**
-     * Constructs a texture from a ByteBufferedImage, with an option for anti-aliasing.
-     *
-     * @param image           The ByteBufferedImage containing the image data.
-     * @param useAntiAliasing Flag indicating whether to use anti-aliasing.
-     */
-    public Texture(final ByteBufferedImage image, boolean useAntiAliasing) {
+    public Texture(final ByteBufferedImage image, TextureFilter filter, TextureConfig config) {
         super(glGenTextures());
         glBindTexture(GL_TEXTURE_2D, id);
+
+        this.filter = filter;
+        this.config = config;
+        this.dimensions = new TextureDimensions(image.width(), image.height());
 
         // Set texture parameters
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT); // Repeat texture when stretched
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-        final int magFilter = useAntiAliasing ? GL_LINEAR : GL_NEAREST;
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, magFilter);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, magFilter);
 
-        width = image.width();
-        height = image.height();
-        channels = image.channels();
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter.magFilter());
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter.minFilter());
 
-        final int colorMode = image.channels() == 4 ? GL_RGBA : GL_RGB;
-        glTexImage2D(GL_TEXTURE_2D, 0, colorMode, image.width(), image.height(),
-                0, colorMode, GL_UNSIGNED_BYTE, image.bytes());
+        glTexImage2D(GL_TEXTURE_2D, config.mipMapLevel(), config.format(), image.width(), image.height(),
+                0, config.format(), GL_UNSIGNED_BYTE, image.bytes());
+    }
+
+    /**
+     * Constructs a Texture from the provided image with default filter and configuration.
+     *
+     * @param image The image data used to create the texture.
+     */
+    public Texture(ByteBufferedImage image) {
+        this(image, new TextureFilter(), new TextureConfig());
     }
 
     /**
@@ -117,7 +116,7 @@ public class Texture extends OpenGLObject {
     /**
      * Binds the texture to a specific texture unit slot.
      *
-     * @param slot The texture unit slot.
+     * @param slot The texture unit slot to bind the texture to.
      */
     public void bindToSlot(int slot) {
         glActiveTexture(GL_TEXTURE0 + slot);
