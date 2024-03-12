@@ -1,4 +1,4 @@
-package org.nebula.graphics.globjects;
+package org.nebula.graphics.globjects.texture;
 
 /**
  * The {@code TextureDimensions} class represents the dimensions (width and height) of a texture.

@@ -1,4 +1,4 @@
-package org.nebula.graphics.globjects;
+package org.nebula.graphics.globjects.texture;
 
 import static org.lwjgl.opengl.GL33C.GL_LINEAR;
 

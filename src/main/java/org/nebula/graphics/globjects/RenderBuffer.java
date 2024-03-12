@@ -25,7 +25,8 @@ import static org.lwjgl.opengl.GL33C.*;
  * @since 10.03.2024
  */
 @Getter
-public class RenderBuffer extends OpenGLObject {
+public final class RenderBuffer extends OpenGLObject
+{
 
     /**
      * The width of the Renderbuffer in pixels.

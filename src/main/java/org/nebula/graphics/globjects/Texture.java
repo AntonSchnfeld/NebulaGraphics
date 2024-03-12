@@ -2,6 +2,9 @@ package org.nebula.graphics.globjects;
 
 import lombok.Getter;
 import org.nebula.graphics.data.ByteBufferedImage;
+import org.nebula.graphics.globjects.texture.TextureConfig;
+import org.nebula.graphics.globjects.texture.TextureDimensions;
+import org.nebula.graphics.globjects.texture.TextureFilter;
 
 import static org.lwjgl.opengl.GL33C.*;
 import static org.lwjgl.system.MemoryUtil.NULL;
