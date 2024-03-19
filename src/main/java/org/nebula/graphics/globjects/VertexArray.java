@@ -61,6 +61,24 @@ public class VertexArray extends OpenGLObject {
     }
 
     /**
+     * Specifies the location and data format of a vertex attribute in the VAO and links
+     * that attribute to a buffer.
+     *
+     * @param buffer   The buffer which will be linked to the attribute.
+     * @param index    The attribute index.
+     * @param size     The number of components per attribute.
+     * @param dataType The data type of each component.
+     * @param stride   The byte offset between consecutive generic vertex attributes.
+     * @param pointer  The offset of the first component of the first generic vertex attribute.
+     */
+    public void vertexAttribPointer(Buffer buffer, int index, int size, Buffer.Datatype dataType, int stride, int pointer) {
+        bind();
+        buffer.bind();
+        glVertexAttribPointer(index, size, dataType.getGlConstant(), false, stride, pointer);
+        enableVertexAttributeArray(index);
+    }
+
+    /**
      * Specifies the location and data format of a vertex attribute in the VAO.
      *
      * @param index    The attribute index.
