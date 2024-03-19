@@ -2,6 +2,9 @@ package org.nebula.graphics.globjects;
 
 import lombok.Getter;
 
+import javax.swing.*;
+import javax.swing.text.DefaultFormatterFactory;
+
 import static org.lwjgl.opengl.GL33C.*;
 
 /**
@@ -25,7 +28,7 @@ import static org.lwjgl.opengl.GL33C.*;
  * @since 10.03.2024
  */
 @Getter
-public final class RenderBuffer extends OpenGLObject
+public final class RenderBuffer extends OpenGLObject implements FrameBufferAttachment
 {
 
     /**

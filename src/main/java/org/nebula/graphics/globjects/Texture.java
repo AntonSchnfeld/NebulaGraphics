@@ -25,7 +25,8 @@ import static org.lwjgl.system.MemoryUtil.NULL;
  * @since 07.03.2024
  */
 @Getter
-public class Texture extends OpenGLObject {
+public final class Texture extends OpenGLObject implements FrameBufferAttachment
+{
     /**
      * The dimensions (width and height) of the texture.
      */

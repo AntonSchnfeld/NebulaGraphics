@@ -47,7 +47,7 @@ public class FrameBuffer extends OpenGLObject {
     /**
      * A map of attachment points to attached OpenGL objects (textures or renderbuffers).
      */
-    private final Map<Integer, OpenGLObject> attachments;
+    private final Map<Integer, FrameBufferAttachment> attachments;
 
     /**
      * Constructs a FrameBuffer object, creating a new framebuffer in OpenGL.
@@ -59,32 +59,18 @@ public class FrameBuffer extends OpenGLObject {
         complete = false;
     }
 
-    /**
-     * Attaches a texture to the framebuffer.
-     *
-     * @param texture    The texture to attach.
-     * @param attachment The attachment point (e.g., GL_COLOR_ATTACHMENT0).
-     * @param mipMapLevel The mipmap level of the texture.
-     */
-    public void attachTexture(Texture texture, int attachment, int mipMapLevel) {
-        attachments.put(attachment, texture);
-
+    public void attach(FrameBufferAttachment attachment, int slot) {
         bind();
-        glFramebufferTexture2D(GL_FRAMEBUFFER, attachment, GL_TEXTURE_2D, texture.id, mipMapLevel);
-        unbind();
-    }
-
-    /**
-     * Attaches a renderbuffer to the framebuffer.
-     *
-     * @param renderBuffer The renderbuffer to attach.
-     * @param attachment   The attachment point (e.g., GL_DEPTH_ATTACHMENT).
-     */
-    public void attachRenderBuffer(RenderBuffer renderBuffer, int attachment) {
-        attachments.put(attachment, renderBuffer);
-
-        bind();
-        glFramebufferRenderbuffer(GL_FRAMEBUFFER, attachment, GL_RENDERBUFFER, renderBuffer.id);
+        switch (attachment) {
+            case Texture texture -> {
+                glFramebufferTexture(GL_FRAMEBUFFER, slot, texture.id, 0);
+                attachments.put(slot, attachment);
+            }
+            case RenderBuffer renderBuffer -> {
+                glFramebufferRenderbuffer(GL_FRAMEBUFFER, slot, GL_RENDERBUFFER, renderBuffer.id);
+                attachments.put(slot, attachment);
+            }
+        }
         unbind();
     }
 
