@@ -12,7 +12,7 @@ import static org.lwjgl.opengl.GL42C.*;
  * @since 21.03.2024
  */
 @AllArgsConstructor
-public enum GLSLDataType {
+public enum GLDataType {
     FLOAT("float", Float.BYTES, 1, GL_FLOAT),
     INT("int", Integer.BYTES, 1, GL_INT),
     SHORT("short", Short.BYTES, 1, GL_SHORT),

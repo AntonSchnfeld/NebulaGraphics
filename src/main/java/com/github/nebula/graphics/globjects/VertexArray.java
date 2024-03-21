@@ -71,10 +71,10 @@ public class VertexArray extends OpenGLObject {
      * @param stride   The byte offset between consecutive generic vertex attributes.
      * @param pointer  The offset of the first component of the first generic vertex attribute.
      */
-    public void vertexAttribPointer(Buffer buffer, int index, int size, Buffer.Datatype dataType, int stride, int pointer) {
+    public void vertexAttribPointer(Buffer buffer, int index, int size, int dataType, int stride, int pointer) {
         bind();
         buffer.bind();
-        glVertexAttribPointer(index, size, dataType.getGlConstant(), false, stride, pointer);
+        glVertexAttribPointer(index, size, dataType, false, stride, pointer);
         enableVertexAttributeArray(index);
     }
 
@@ -87,9 +87,9 @@ public class VertexArray extends OpenGLObject {
      * @param stride   The byte offset between consecutive generic vertex attributes.
      * @param pointer  The offset of the first component of the first generic vertex attribute.
      */
-    public void vertexAttribPointer(int index, int size, Buffer.Datatype dataType, int stride, int pointer) {
+    public void vertexAttribPointer(int index, int size, int dataType, int stride, int pointer) {
         bind();
-        glVertexAttribPointer(index, size, dataType.getGlConstant(), false, stride, pointer);
+        glVertexAttribPointer(index, size, dataType, false, stride, pointer);
         enableVertexAttributeArray(index);
     }
 

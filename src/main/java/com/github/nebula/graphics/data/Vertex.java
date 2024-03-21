@@ -1,10 +1,10 @@
 package com.github.nebula.graphics.data;
 
-import io.reactivex.rxjava3.annotations.NonNull;
+import com.github.util.Poolable;
 import lombok.val;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
-import org.nebula.util.Poolable;
+import io.reactivex.rxjava3.annotations.NonNull;
 
 /**
  * The {@code Vertex} class represents a vertex in three-dimensional space and contains information
@@ -12,12 +12,13 @@ import org.nebula.util.Poolable;
  * applications and is a record, immutable by default.
  *
  * <p>It implements the {@link Poolable} interface, allowing instances to be efficiently managed by a
- * {@link org.nebula.util.Pool}.
+ * {@link com.github.util.Pool}.
  *
  * @author Anton Schoenfeld
  * @since 07.03.2024
  */
-public record Vertex(Vector3f position, Vector3f normal, Vector2f textureCoord) implements Poolable {
+public record Vertex(Vector3f position, Vector3f normal, Vector2f textureCoord) implements Poolable
+{
 
     /**
      * Constructs a new {@code Vertex} with the specified coordinates for position, normal, and texture coordinates.

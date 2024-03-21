@@ -68,7 +68,7 @@ public class Main {
             vbo.data(vertices, Buffer.Usage.STATIC_DRAW);
 
             vbo.bind();
-            vao.vertexAttribPointer(0, 2, Buffer.Datatype.FLOAT, 2 * Float.BYTES, 0);
+            vao.vertexAttribPointer(0, 2, GL_FLOAT, 2 * Float.BYTES, 0);
             shader.bind();
 
             fbo.attach(texture, GL_COLOR_ATTACHMENT0);
@@ -88,12 +88,14 @@ public class Main {
             };
             elementBuffer.data(indices, Buffer.Usage.STATIC_DRAW);
             buffer.bind();
-            vertexArray.vertexAttribPointer(0, 2, Buffer.Datatype.FLOAT, 4 * Float.BYTES, 0);
-            vertexArray.vertexAttribPointer(1, 2, Buffer.Datatype.FLOAT, 4 * Float.BYTES, 2 * Float.BYTES);
+            vertexArray.vertexAttribPointer(0, 2, GL_FLOAT, 4 * Float.BYTES, 0);
+            vertexArray.vertexAttribPointer(1, 2, GL_FLOAT, 4 * Float.BYTES, 2 * Float.BYTES);
             buffer.unbind();
 
             window.setRenderListener(() -> {
                 fbo.bind();
+                glClearColor(0, 0, 0, 1);
+                glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
                 shader.bind();
                 shader.uploadUniformFloat("time", (float) glfwGetTime());
                 vao.bind();

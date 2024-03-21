@@ -7,7 +7,7 @@ package com.github.nebula.graphics.data;
  * @author Anton Schoenfeld
  * @since 21.03.2024
  */
-public record VertexAttribute(GLSLDataType dataType, String name, int location) {
+public record VertexAttribute(GLDataType dataType, String name, int location) {
     /**
      * Constructs a new VertexAttribute with the specified data type, name, and location.
      *
