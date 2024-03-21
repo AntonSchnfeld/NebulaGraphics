@@ -1,4 +1,4 @@
-package org.nebula.graphics.globjects.texture;
+package com.github.nebula.graphics.globjects.texture;
 
 import static org.lwjgl.opengl.GL33C.GL_RGBA;
 import static org.lwjgl.opengl.GL33C.GL_UNSIGNED_BYTE;

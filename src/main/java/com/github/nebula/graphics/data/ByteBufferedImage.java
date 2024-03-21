@@ -1,4 +1,4 @@
-package org.nebula.graphics.data;
+package com.github.nebula.graphics.data;
 
 import lombok.NonNull;
 import org.lwjgl.stb.STBImage;

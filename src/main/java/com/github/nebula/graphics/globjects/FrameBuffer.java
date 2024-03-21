@@ -1,7 +1,7 @@
-package org.nebula.graphics.globjects;
+package com.github.nebula.graphics.globjects;
 
+import com.github.nebula.graphics.globjects.exceptions.FrameBufferNotCompleteException;
 import lombok.Getter;
-import org.nebula.graphics.globjects.exceptions.FrameBufferNotCompleteException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -26,28 +26,19 @@ import static org.lwjgl.opengl.GL33C.*;
  * <p>When a framebuffer instance is no longer needed, it should be closed using the {@link #close()} method
  * to release OpenGL resources associated with it.
  *
- * <p>Example usage:
- * <pre>{@code
- * FrameBuffer frameBuffer = new FrameBuffer();
- * frameBuffer.attachTexture(texture, GL_COLOR_ATTACHMENT0, 0);
- * frameBuffer.attachRenderBuffer(renderBuffer, GL_DEPTH_ATTACHMENT);
- * frameBuffer.complete();
- * }</pre>
- *
  * @author Anton Schoenfeld
  * @since 12.03.2024
  */
 @Getter
 public class FrameBuffer extends OpenGLObject {
     /**
-     * Indicates whether the framebuffer is complete.
-     */
-    private boolean complete;
-
-    /**
      * A map of attachment points to attached OpenGL objects (textures or renderbuffers).
      */
     private final Map<Integer, FrameBufferAttachment> attachments;
+    /**
+     * Indicates whether the framebuffer is complete.
+     */
+    private boolean complete;
 
     /**
      * Constructs a FrameBuffer object, creating a new framebuffer in OpenGL.

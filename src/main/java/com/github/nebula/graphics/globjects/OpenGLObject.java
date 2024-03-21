@@ -1,4 +1,4 @@
-package org.nebula.graphics.globjects;
+package com.github.nebula.graphics.globjects;
 
 /**
  * The {@code OpenGLObject} class is an abstract base class representing an OpenGL object.

@@ -1,11 +1,13 @@
-package org.nebula.graphics.globjects;
+package com.github.nebula.graphics.globjects;
 
+import com.github.nebula.graphics.data.VertexLayout;
+import com.github.nebula.graphics.globjects.exceptions.ShaderCompileException;
+import com.github.nebula.graphics.globjects.exceptions.ShaderLinkageException;
+import com.github.nebula.graphics.globjects.exceptions.ShaderValidationException;
+import com.github.nebula.graphics.util.ShaderUtil;
 import lombok.Getter;
 import lombok.val;
 import org.joml.*;
-import org.nebula.graphics.globjects.exceptions.ShaderCompileException;
-import org.nebula.graphics.globjects.exceptions.ShaderLinkageException;
-import org.nebula.graphics.globjects.exceptions.ShaderValidationException;
 
 import java.util.HashMap;
 
@@ -36,9 +38,10 @@ import static org.lwjgl.opengl.GL33C.*;
  * @since 07.03.2024
  */
 public class Shader extends OpenGLObject {
-    @Getter
-    private static Shader currentlyBoundShader;
+    private static @Getter Shader currentlyBoundShader;
     private final HashMap<String, Integer> uniformLocations;
+    private final @Getter String vertexSource, fragmentSource;
+    private final @Getter VertexLayout vertexLayout;
 
     /**
      * Creates a new Shader with specified vertex and fragment shader sources.
@@ -48,11 +51,27 @@ public class Shader extends OpenGLObject {
      */
     public Shader(final String vertexSource, final String fragmentSource) {
         super(glCreateProgram());
+        this.vertexSource = vertexSource;
+        this.fragmentSource = fragmentSource;
+        this.vertexLayout = ShaderUtil.parseVertexLayout(vertexSource);
         uniformLocations = new HashMap<>();
 
         final int vertexShader = glCreateShader(GL_VERTEX_SHADER);
         final int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
 
+        compile(vertexShader, fragmentShader);
+        link(vertexShader, fragmentShader);
+
+        glDeleteShader(vertexShader);
+        glDeleteShader(fragmentShader);
+
+        glValidateProgram(id);
+
+        if (glGetProgrami(id, GL_VALIDATE_STATUS) == GL_FALSE)
+            throw new ShaderValidationException(glGetProgramInfoLog(id));
+    }
+
+    private void compile(int vertexShader, int fragmentShader) {
         glShaderSource(vertexShader, vertexSource);
         glShaderSource(fragmentShader, fragmentSource);
 
@@ -63,7 +82,9 @@ public class Shader extends OpenGLObject {
             throw new ShaderCompileException(glGetShaderInfoLog(vertexShader));
         if (glGetShaderi(fragmentShader, GL_COMPILE_STATUS) == GL_FALSE)
             throw new ShaderCompileException(glGetShaderInfoLog(fragmentShader));
+    }
 
+    private void link(int vertexShader, int fragmentShader) {
         glAttachShader(id, vertexShader);
         glAttachShader(id, fragmentShader);
 
@@ -71,14 +92,6 @@ public class Shader extends OpenGLObject {
 
         if (glGetProgrami(id, GL_LINK_STATUS) == GL_FALSE)
             throw new ShaderLinkageException(glGetProgramInfoLog(id));
-
-        glDeleteShader(vertexShader);
-        glDeleteShader(fragmentShader);
-
-        glValidateProgram(id);
-
-        if (glGetProgrami(id, GL_VALIDATE_STATUS) == GL_FALSE)
-            throw new ShaderValidationException(glGetProgramInfoLog(id));
     }
 
     /**

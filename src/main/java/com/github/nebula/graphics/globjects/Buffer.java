@@ -1,4 +1,4 @@
-package org.nebula.graphics.globjects;
+package com.github.nebula.graphics.globjects;
 
 import lombok.Getter;
 

@@ -1,4 +1,4 @@
-package org.nebula.graphics.data;
+package com.github.nebula.graphics.data;
 
 import io.reactivex.rxjava3.annotations.NonNull;
 import lombok.val;

@@ -1,15 +1,12 @@
-package org.nebula.graphics.globjects;
+package com.github.nebula.graphics.globjects;
 
 import lombok.Getter;
-
-import javax.swing.*;
-import javax.swing.text.DefaultFormatterFactory;
 
 import static org.lwjgl.opengl.GL33C.*;
 
 /**
  * The {@code RenderBuffer} class represents an OpenGL Renderbuffer object used for off-screen rendering,
- * particularly in conjunction with framebuffers. This class extends {@link org.nebula.graphics.globjects.OpenGLObject}, encapsulating
+ * particularly in conjunction with framebuffers. This class extends {@link OpenGLObject}, encapsulating
  * the creation, binding, and destruction of OpenGL Renderbuffers.
  *
  * <p>A Renderbuffer is a storage object for framebuffer attachments that store pixel data, such as color,
@@ -28,8 +25,7 @@ import static org.lwjgl.opengl.GL33C.*;
  * @since 10.03.2024
  */
 @Getter
-public final class RenderBuffer extends OpenGLObject implements FrameBufferAttachment
-{
+public final class RenderBuffer extends OpenGLObject implements FrameBufferAttachment {
 
     /**
      * The width of the Renderbuffer in pixels.
