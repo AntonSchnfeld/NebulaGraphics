@@ -1,8 +1,6 @@
 package com.github.nebula.graphics.util;
 
-import com.github.nebula.graphics.data.GLDataType;
-import com.github.nebula.graphics.data.VertexAttribute;
-import com.github.nebula.graphics.data.VertexLayout;
+import com.github.nebula.graphics.data.*;
 import lombok.val;
 
 import java.util.ArrayList;
@@ -19,7 +17,9 @@ import java.util.regex.Pattern;
 public class ShaderUtil {
 
     private static final Pattern VERTEX_LAYOUT_DECL =
-            Pattern.compile("\\blayout\\s*\\(\\s*location\\s*=\\s*(\\d+)\\s*\\)\\s*in\\s+(\\w+)\\s+(\\w+);");
+            Pattern.compile("\\blayout\\s*\\(\\s*location\\s*=\\s*(\\d+)\\s*\\)\\s*in\\s+(\\w+)\\s+(\\w+)\\s*;");
+    private static final Pattern UNIFORM_LAYOUT_DECL_REGEX =
+            Pattern.compile("\\s*\\buniform\\s+(\\w+)\\s+(\\w+)\\s*;");
 
     /**
      * Parses the vertex layout declarations from the provided vertex shader source code.
@@ -29,7 +29,7 @@ public class ShaderUtil {
      * @return The vertex layout extracted from the shader source.
      * @throws IllegalArgumentException If the shader source code is invalid or contains unrecognized data types.
      */
-    public static VertexLayout parseVertexLayout(String vertexSource) {
+    public static VertexAttributes parseVertexAttributes(String vertexSource) {
         val vertexSourceLines = vertexSource.split("\n");
 
         // Gets all lines where a vertex attribute is declared
@@ -46,11 +46,34 @@ public class ShaderUtil {
                 try {
                     vertexAttribList.add(new VertexAttribute(GLDataType.valueOf(dataType.toUpperCase()), attribName, loc));
                 } catch (IllegalArgumentException e) {
-                    throw new IllegalArgumentException("Unrecognized data type: " + dataType);
+                    throw new IllegalArgumentException("Unrecognized vertex attribute data type: " + dataType);
                 }
             }
         }
 
-        return new VertexLayout(vertexAttribList.toArray(new VertexAttribute[0]));
+        return new VertexAttributes(vertexAttribList.toArray(new VertexAttribute[0]));
+    }
+
+    public static UniformAttributes parseUniformAttributes(String... shaders) {
+        val lines = new ArrayList<String>();
+        for (val shader : shaders)
+            lines.addAll(Arrays.asList(shader.split("\n")));
+
+        val uniformAttribList = new ArrayList<UniformAttribute>();
+
+        for (val line : lines) {
+            val matcher = UNIFORM_LAYOUT_DECL_REGEX.matcher(line);
+            if (matcher.matches()) {
+                val dataType = matcher.group(1);
+                val attribName = matcher.group(2);
+                try {
+                    uniformAttribList.add(new UniformAttribute(GLDataType.valueOf(dataType.toUpperCase()), attribName));
+                } catch (IllegalArgumentException e) {
+                    throw new IllegalArgumentException("Unrecognized uniform attribute data type: " + dataType);
+                }
+            }
+        }
+
+        return new UniformAttributes(uniformAttribList.toArray(new UniformAttribute[0]));
     }
 }
