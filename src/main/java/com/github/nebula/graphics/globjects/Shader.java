@@ -1,6 +1,7 @@
 package com.github.nebula.graphics.globjects;
 
-import com.github.nebula.graphics.data.VertexLayout;
+import com.github.nebula.graphics.data.UniformAttributes;
+import com.github.nebula.graphics.data.VertexAttributes;
 import com.github.nebula.graphics.globjects.exceptions.ShaderCompileException;
 import com.github.nebula.graphics.globjects.exceptions.ShaderLinkageException;
 import com.github.nebula.graphics.globjects.exceptions.ShaderValidationException;
@@ -41,7 +42,8 @@ public class Shader extends OpenGLObject {
     private static @Getter Shader currentlyBoundShader;
     private final HashMap<String, Integer> uniformLocations;
     private final @Getter String vertexSource, fragmentSource;
-    private final @Getter VertexLayout vertexLayout;
+    private final @Getter VertexAttributes vertexAttributes;
+    private final @Getter UniformAttributes uniformAttributes;
 
     /**
      * Creates a new Shader with specified vertex and fragment shader sources.
@@ -53,7 +55,8 @@ public class Shader extends OpenGLObject {
         super(glCreateProgram());
         this.vertexSource = vertexSource;
         this.fragmentSource = fragmentSource;
-        this.vertexLayout = ShaderUtil.parseVertexLayout(vertexSource);
+        this.vertexAttributes = ShaderUtil.parseVertexAttributes(vertexSource);
+        this.uniformAttributes = ShaderUtil.parseUniformAttributes(vertexSource, fragmentSource);
         uniformLocations = new HashMap<>();
 
         final int vertexShader = glCreateShader(GL_VERTEX_SHADER);
@@ -79,9 +82,9 @@ public class Shader extends OpenGLObject {
         glCompileShader(fragmentShader);
 
         if (glGetShaderi(vertexShader, GL_COMPILE_STATUS) == GL_FALSE)
-            throw new ShaderCompileException(glGetShaderInfoLog(vertexShader));
+            throw new ShaderCompileException("Vertex Shader: " + glGetShaderInfoLog(vertexShader));
         if (glGetShaderi(fragmentShader, GL_COMPILE_STATUS) == GL_FALSE)
-            throw new ShaderCompileException(glGetShaderInfoLog(fragmentShader));
+            throw new ShaderCompileException("Fragment Shader: " + glGetShaderInfoLog(fragmentShader));
     }
 
     private void link(int vertexShader, int fragmentShader) {
