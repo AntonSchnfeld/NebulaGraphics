@@ -3,7 +3,6 @@ package com.github.nebula.graphics.data;
 import com.github.nebula.graphics.globjects.Buffer;
 import com.github.nebula.graphics.globjects.VertexArray;
 import io.reactivex.rxjava3.annotations.NonNull;
-import lombok.Getter;
 import lombok.val;
 
 import java.util.Arrays;
@@ -17,9 +16,9 @@ import java.util.Iterator;
  * @author Anton Schoenfeld
  * @since 21.03.2024
  */
-public final class VertexLayout implements Iterable<VertexAttribute> {
-    private final VertexAttribute[] layout;
+public final class VertexAttributes implements Iterable<VertexAttribute> {
     public final int size, byteSize;
+    private final VertexAttribute[] layout;
 
     /**
      * Constructs a new VertexLayout with the specified vertex attribute layout.
@@ -30,7 +29,7 @@ public final class VertexLayout implements Iterable<VertexAttribute> {
      *                                      An invalid layout occurs when the attributes are not in sequential order
      *                                      starting from location 0 or when two attributes have the same name.
      */
-    public VertexLayout(@NonNull VertexAttribute... layout) {
+    public VertexAttributes(@NonNull VertexAttribute... layout) {
         validateLayout(layout);
         this.layout = Arrays.copyOf(layout, layout.length);
         var size = 0;
@@ -138,7 +137,7 @@ public final class VertexLayout implements Iterable<VertexAttribute> {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        VertexLayout that = (VertexLayout) o;
+        VertexAttributes that = (VertexAttributes) o;
 
         if (size != that.size) return false;
         if (byteSize != that.byteSize) return false;
