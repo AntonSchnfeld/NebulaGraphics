@@ -1,10 +1,12 @@
 package com.github.nebula.graphics.util;
 
 import com.github.nebula.graphics.data.GLDataType;
+import com.github.nebula.graphics.data.UniformAttribute;
 import com.github.nebula.graphics.data.VertexAttribute;
 import lombok.val;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import java.util.EnumSet;
 
 class ShaderUtilTest {
 
@@ -16,7 +18,7 @@ class ShaderUtilTest {
                 layout( location= 2 ) in vec3 vNorm;
                 layout  (location =  3)  in  vec2 vUv;
                 """;
-        val layout = ShaderUtil.parseVertexLayout(vertexAttribDeclarations);
+        val layout = ShaderUtil.parseVertexAttributes(vertexAttribDeclarations);
         val vPosDecl = layout.get(0);
         Assertions.assertEquals(vPosDecl, new VertexAttribute(GLDataType.VEC3, "vPos", 0));
         val vColDecl = layout.get(1);
@@ -28,51 +30,62 @@ class ShaderUtilTest {
     }
 
     @Test
-    void parseVertexLayout_given_SamplerTypes() {
+    void parseVertexLayout_given_DifferentTypes() {
+        val dataTypes = EnumSet.allOf(GLDataType.class);
+        val stringBuilder = new StringBuilder();
+        {
+            val dataTypeIterator = dataTypes.iterator();
+            for (var i = 0; i < dataTypes.size(); i++) {
+                val dataType = dataTypeIterator.next();
+                stringBuilder.append("layout(location=").append(i).append(") in ").append(dataType).
+                        append(" val").append(i).append(";");
+            }
+        }
+        val vertexAttribDecls = stringBuilder.toString();
+
+        val uniforms = ShaderUtil.parseVertexAttributes(vertexAttribDecls);
+        val dataTypeIterator = dataTypes.iterator();
+        for (val uniform : uniforms) {
+            Assertions.assertEquals(uniform.dataType(), dataTypeIterator.next());
+        }
+    }
+
+    @Test
+    void parseUniforms_given_differentSpacings() {
         val vertexAttribDeclarations = """
-                layout(location = 0) in sampler1D s1d;
-                layout(location = 1) in sampler1DArray s1dArr;
-                layout(location = 2) in sampler1DShadow s1dShadow;
-                layout(location = 3) in sampler1DArrayShadow s1dArrShadow;
-                layout(location = 4) in sampler2D s2d;
-                layout(location = 5) in sampler2DArray s2dArr;
-                layout(location = 6) in sampler2DShadow s2dShadow;
-                layout(location = 7) in sampler2DArrayShadow s2dArrShadow;
-                layout(location = 8) in sampler2DRect s2dRect;
-                layout(location = 9) in sampler2DRectShadow s2dRectShadow;
-                layout(location = 10) in sampler3D s3d;
-                layout(location = 11) in samplerCube sCube;
-                layout(location = 12) in samplerCubeArray sCubeArr;
-                layout(location = 13) in samplerCubeArrayShadow sCubeArrShadow;
-                layout(location = 14) in samplerBuffer sBuf;
+                uniform vec3 vPos;
+                uniform vec4 vCol;
+                uniform vec3 vNorm;
+                uniform vec2 vUv;
                 """;
-        val samplerTypes = new GLDataType[]{
-                GLDataType.SAMPLER1D,
-                GLDataType.SAMPLER1DARRAY,
-                GLDataType.SAMPLER1DSHADOW,
-                GLDataType.SAMPLER1DARRAYSHADOW,
+        val layout = ShaderUtil.parseUniformAttributes(vertexAttribDeclarations);
+        val vPosDecl = layout.get(0);
+        Assertions.assertEquals(vPosDecl, new UniformAttribute(GLDataType.VEC3, "vPos"));
+        val vColDecl = layout.get(1);
+        Assertions.assertEquals(vColDecl, new UniformAttribute(GLDataType.VEC4, "vCol"));
+        val vNormDecl = layout.get(2);
+        Assertions.assertEquals(vNormDecl, new UniformAttribute(GLDataType.VEC3, "vNorm"));
+        val vUvDecl = layout.get(3);
+        Assertions.assertEquals(vUvDecl, new UniformAttribute(GLDataType.VEC2, "vUv"));
+    }
 
-                GLDataType.SAMPLER2D,
-                GLDataType.SAMPLER2DARRAY,
-                GLDataType.SAMPLER2DSHADOW,
-                GLDataType.SAMPLER2DARRAYSHADOW,
+    @Test
+    void parseUniforms_given_DifferentTypes() {
+        val dataTypes = EnumSet.allOf(GLDataType.class);
+        val stringBuilder = new StringBuilder();
+        {
+            val dataTypeIterator = dataTypes.iterator();
+            for (var i = 0; i < dataTypes.size(); i++) {
+                val dataType = dataTypeIterator.next();
+                stringBuilder.append("uniform ").append(dataType.name).append(" val").append(i).append(";").append("\n");
+            }
+        }
+        val uniformAttribDecls = stringBuilder.toString();
 
-                GLDataType.SAMPLER2DRECT,
-                GLDataType.SAMPLER2DRECTSHADOW,
-
-                GLDataType.SAMPLER3D,
-
-                GLDataType.SAMPLERCUBE,
-                GLDataType.SAMPLERCUBEARRAY,
-                GLDataType.SAMPLERCUBEARRAYSHADOW,
-
-                GLDataType.SAMPLERBUFFER
-        };
-
-        val layout = ShaderUtil.parseVertexLayout(vertexAttribDeclarations);
-        val layoutIterator = layout.iterator();
-        for (GLDataType samplerType : samplerTypes) {
-            Assertions.assertEquals(layoutIterator.next().dataType(), samplerType);
+        val uniforms = ShaderUtil.parseUniformAttributes(uniformAttribDecls);
+        val dataTypeIterator = dataTypes.iterator();
+        for (val uniform : uniforms) {
+            Assertions.assertEquals(uniform.dataType(), dataTypeIterator.next());
         }
     }
 }
