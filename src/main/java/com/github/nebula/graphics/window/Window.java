@@ -1,4 +1,4 @@
-package com.github.nebula.graphics;
+package com.github.nebula.graphics.window;
 
 import com.github.nebula.graphics.data.ByteBufferedImage;
 import org.joml.Vector2i;
@@ -25,24 +25,26 @@ public class Window implements AutoCloseable {
     private ByteBufferedImage currentIcon;
     private String title;
     private boolean resizable;
+    private final WindowHints windowHints;
 
-    public Window(final String title, final int x, final int y, final int width, final int height) {
+    public Window(WindowHints windowHints, final String title, final int x, final int y, final int width, final int height) {
         if (!glfwInit())
             throw new IllegalStateException("Could not initialize GLFW library");
 
         this.title = title;
+        this.windowHints = windowHints;
         resizable = true;
         init(title, x, y, width, height);
     }
 
-    public Window(final String title, final int width, final int height) {
-        this(title, 0, 0,
+    public Window(WindowHints windowHints, final String title, final int width, final int height) {
+        this(windowHints, title, 0, 0,
                 width, height);
         center();
     }
 
-    public Window(final String title) {
-        this(title, DEFAULT_WIDTH, DEFAULT_HEIGHT);
+    public Window(WindowHints windowHints, final String title) {
+        this(windowHints, title, DEFAULT_WIDTH, DEFAULT_HEIGHT);
     }
 
     public void setRenderListener(Runnable renderListener) {
@@ -58,10 +60,10 @@ public class Window implements AutoCloseable {
         errorCallback.set();
 
         // Configure GLFW
-        glfwDefaultWindowHints(); // optional, the current window hints are already the default
-        glfwWindowHint(GLFW_VISIBLE, GLFW_TRUE); // the window will stay hidden after creation
-        glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE); // the window will be non-resizable
-        glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
+        var windowHintsMap = windowHints.windowHintsMap;
+        windowHintsMap.forEach((hint, enabled) -> {
+            glfwWindowHint(hint.glfwConstant, enabled ? GLFW_TRUE : GLFW_FALSE);
+        });
 
         // Create the window
         windowObject = glfwCreateWindow(width, height, title, NULL, NULL);
@@ -94,6 +96,10 @@ public class Window implements AutoCloseable {
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
         glfwShowWindow(windowObject);
+    }
+
+    public long getId() {
+        return windowObject;
     }
 
     public GLCapabilities createGLCapabilities() {
