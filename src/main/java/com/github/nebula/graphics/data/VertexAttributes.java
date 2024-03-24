@@ -155,7 +155,7 @@ public final class VertexAttributes implements Iterable<VertexAttribute> {
 
     @Override
     public String toString() {
-        return "VertexLayout{" +
+        return getClass().getSimpleName() + "{" +
                 "layout=" + Arrays.toString(layout) +
                 ", size=" + size +
                 ", byteSize=" + byteSize +
