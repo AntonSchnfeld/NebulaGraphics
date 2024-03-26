@@ -21,4 +21,8 @@ public interface Mesh extends AutoCloseable {
     void setIndices(IntBuffer indices);
     long getVerticesSize();
     long getIndicesSize();
+    /**
+     * {@inheritDoc}
+     */
+    void close();
 }

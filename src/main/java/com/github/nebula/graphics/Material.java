@@ -66,4 +66,9 @@ public interface Material extends AutoCloseable {
      * @return the value of the uniform attribute
      */
     Object getUniform(String name);
+
+    /**
+     * {@inheritDoc}
+     */
+    void close();
 }
