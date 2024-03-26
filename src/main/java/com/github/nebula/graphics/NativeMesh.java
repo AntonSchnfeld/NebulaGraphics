@@ -80,6 +80,47 @@ public class NativeMesh implements Mesh {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        NativeMesh that = (NativeMesh) o;
+
+        if (verticesSize != that.verticesSize) return false;
+        if (indicesSize != that.indicesSize) return false;
+        if (!vertices.equals(that.vertices)) return false;
+        return indices.equals(that.indices);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = vertices.hashCode();
+        result = 31 * result + indices.hashCode();
+        result = 31 * result + (int) (verticesSize ^ (verticesSize >>> 32));
+        result = 31 * result + (int) (indicesSize ^ (indicesSize >>> 32));
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return STR."""
+                \{getClass().getSimpleName()}{
+                    vertices=\{vertices},
+                    indices=\{indices},
+                    verticesSize=\{verticesSize},
+                    indicesSize=\{indicesSize}
+                """;
+        /*""NativeMesh{" +
+                "vertices=" + vertices +
+                ", indices=" + indices +
+                ", verticesSize=" + verticesSize +
+                ", indicesSize=" + indicesSize +
+                '}';
+
+         */
+    }
+
+    @Override
     public void close() {
         MemoryUtil.memFree(indices);
         MemoryUtil.memFree(vertices);

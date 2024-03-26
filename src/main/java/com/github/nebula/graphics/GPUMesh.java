@@ -74,6 +74,40 @@ public class GPUMesh implements Mesh {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        GPUMesh gpuMesh = (GPUMesh) o;
+
+        if (verticesSize != gpuMesh.verticesSize) return false;
+        if (indicesSize != gpuMesh.indicesSize) return false;
+        if (!vbo.equals(gpuMesh.vbo)) return false;
+        return ebo.equals(gpuMesh.ebo);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = vbo.hashCode();
+        result = 31 * result + ebo.hashCode();
+        result = 31 * result + (int) (verticesSize ^ (verticesSize >>> 32));
+        result = 31 * result + (int) (indicesSize ^ (indicesSize >>> 32));
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return STR."""
+                \{getClass().getSimpleName()}{
+                    vbo=\{vbo},
+                    ebo=\{ebo},
+                    verticesSize=\{verticesSize},
+                    indicesSize=\{indicesSize}
+                }
+                """;
+    }
+
+    @Override
     public void close() {
         vbo.close();
         ebo.close();
