@@ -54,7 +54,7 @@ public final class BufferUtil {
                 concatBuffer.put(n + highestIndex);
             }
 
-            highestIndex += currentHighestIndex;
+            highestIndex += currentHighestIndex + 1;
         }
 
         return concatBuffer;
