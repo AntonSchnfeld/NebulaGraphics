@@ -9,7 +9,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
+/**
+ * @author Anton Schoenfeld
+ * @since 26.03.2024
+ */
 public class Model implements AutoCloseable {
     private final @Getter Map<Mesh, Material> meshMaterialMap;
     private final List<ModelInstance> instances;
