@@ -28,6 +28,27 @@
                     <compilerArgs>--enable-preview</compilerArgs>
                 </configuration>
             </plugin>
+
+            <plugin>
+                <groupId>org.openjdk.jmh</groupId>
+                <artifactId>jmh-generator-annprocess</artifactId>
+                <version>1.32</version> <!-- Adjust version as needed -->
+                <configuration>
+                    <mainClass>org.openjdk.jmh.Main</mainClass>
+                    <!-- Add any additional configuration here if needed -->
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>run-benchmarks</id>
+                        <phase>none</phase>
+                        <goals>
+                            <goal>generate-sources</goal>
+                            <goal>compile</goal>
+                            <goal>process-classes</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 
@@ -159,6 +180,20 @@
     </dependencyManagement>
 
     <dependencies>
+        <!-- JMH Core -->
+        <dependency>
+            <groupId>org.openjdk.jmh</groupId>
+            <artifactId>jmh-core</artifactId>
+            <version>1.32</version> <!-- Adjust version as needed -->
+        </dependency>
+
+        <!-- JMH Annotations (Optional) -->
+        <dependency>
+            <groupId>org.openjdk.jmh</groupId>
+            <artifactId>jmh-generator-annprocess</artifactId>
+            <version>1.32</version> <!-- Adjust version as needed -->
+            <scope>provided</scope> <!-- This scope is recommended for annotation processor dependencies -->
+        </dependency>
         <dependency>
             <groupId>org.lwjgl</groupId>
             <artifactId>lwjgl</artifactId>
