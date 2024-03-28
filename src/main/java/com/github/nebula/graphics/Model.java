@@ -1,5 +1,6 @@
 package com.github.nebula.graphics;
 
+import com.github.nebula.graphics.util.BufferUtil;
 import io.reactivex.rxjava3.annotations.NonNull;
 import lombok.Getter;
 import lombok.val;
@@ -14,10 +15,10 @@ import java.util.Map;
  * @since 26.03.2024
  */
 public class Model implements AutoCloseable {
-    private final @Getter Map<Mesh, Material> meshMaterialMap;
+    private final @Getter Map<Material, List<Mesh>> meshMaterialMap;
     private final List<ModelInstance> instances;
 
-    public Model(@NonNull Map<Mesh, Material> modelMaterialMap) {
+    public Model(@NonNull Map<Material, List<Mesh>> modelMaterialMap) {
         super();
         this.meshMaterialMap = modelMaterialMap;
         this.instances = new ArrayList<>();
@@ -37,6 +38,18 @@ public class Model implements AutoCloseable {
         return instance;
     }
 
+    public void renderInstances() {
+        for (val material : meshMaterialMap.keySet()) {
+            val meshes = meshMaterialMap.get(material);
+            val resultMesh = BufferUtil.concatMeshes(new GPUMesh(), meshes.toArray(new Mesh[meshes.size() - 1]));
+
+        }
+    }
+
+    public void render() {
+
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -44,12 +57,15 @@ public class Model implements AutoCloseable {
 
         Model model = (Model) o;
 
-        return meshMaterialMap.equals(model.meshMaterialMap);
+        if (!meshMaterialMap.equals(model.meshMaterialMap)) return false;
+        return instances.equals(model.instances);
     }
 
     @Override
     public int hashCode() {
-        return meshMaterialMap.hashCode();
+        int result = meshMaterialMap.hashCode();
+        result = 31 * result + instances.hashCode();
+        return result;
     }
 
     @Override
@@ -64,9 +80,9 @@ public class Model implements AutoCloseable {
 
     @Override
     public void close() {
-        for (val mesh : meshMaterialMap.keySet())
-            mesh.close();
-        for (val material : meshMaterialMap.values())
+        for (val material : meshMaterialMap.keySet())
             material.close();
+        for (val meshList : meshMaterialMap.values())
+            meshList.stream().parallel().forEach(Mesh::close);
     }
 }
