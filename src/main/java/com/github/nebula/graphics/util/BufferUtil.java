@@ -1,11 +1,15 @@
 package com.github.nebula.graphics.util;
 
+import com.github.nebula.graphics.GPUMesh;
+import com.github.nebula.graphics.Mesh;
+import com.github.nebula.graphics.NativeMesh;
 import lombok.val;
 import org.lwjgl.system.MemoryUtil;
 
 import java.nio.Buffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
+import java.util.stream.Stream;
 
 /**
  * @author Anton Schoenfeld
@@ -16,6 +20,26 @@ public final class BufferUtil {
         if (!buffer.isDirect()) {
             throw new IllegalArgumentException("Expected direct buffer, received heap buffer");
         }
+    }
+
+    public static Mesh concatMeshes(Mesh... meshes) {
+        return concatMeshes(new NativeMesh(), meshes);
+    }
+
+    public static Mesh concatMeshes(Mesh concatMesh, Mesh... meshes) {
+        val len = meshes.length;
+        val floatBuffers = new FloatBuffer[len];
+        val indexBuffers = new IntBuffer[len];
+
+        for (var i = 0; i < len; i++) {
+            floatBuffers[i] = meshes[i].getVertices(false);
+            indexBuffers[i] = meshes[i].getIndices(false);
+        }
+
+        concatMesh.setVertices(concatFloatBuffers(floatBuffers));
+        concatMesh.setIndices(concatIndexBuffers(indexBuffers));
+
+        return concatMesh;
     }
 
     public static int getCombinedBufferSize(Buffer... buffers) {
