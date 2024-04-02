@@ -41,6 +41,7 @@ import static org.lwjgl.opengl.GL33C.*;
 public class Shader extends OpenGLObject {
     private static @Getter Shader currentlyBoundShader;
     private final HashMap<String, Integer> uniformLocations;
+    private final HashMap<String, Integer> uniformBlockLocations;
     private final @Getter String vertexSource, fragmentSource;
     private final @Getter VertexAttributes vertexAttributes;
     private final @Getter UniformAttributes uniformAttributes;
@@ -57,7 +58,8 @@ public class Shader extends OpenGLObject {
         this.fragmentSource = fragmentSource;
         this.vertexAttributes = ShaderUtil.parseVertexAttributes(vertexSource);
         this.uniformAttributes = ShaderUtil.parseUniformAttributes(vertexSource, fragmentSource);
-        uniformLocations = new HashMap<>();
+        this.uniformLocations = new HashMap<>();
+        this.uniformBlockLocations = new HashMap<>();
 
         final int vertexShader = glCreateShader(GL_VERTEX_SHADER);
         final int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
@@ -131,6 +133,10 @@ public class Shader extends OpenGLObject {
      */
     public int getUniformLocation(final String uniformName) {
         return glGetUniformLocation(id, uniformName);
+    }
+
+    public int getUniformBlockLocation(String blockName) {
+        return glGetUniformBlockIndex(id, blockName);
     }
 
     /**
@@ -320,6 +326,19 @@ public class Shader extends OpenGLObject {
         bind();
         val uniformLoc = uniformLocations.get(uniformName);
         glUniform1iv(uniformLoc, value);
+    }
+
+    public void uploadUniformShaderStorageBuffer(String uniformName, String blockName, Buffer value) {
+        if (!uniformLocations.containsKey(uniformName))
+            uniformLocations.put(uniformName, getUniformLocation(uniformName));
+        if (!uniformBlockLocations.containsKey(blockName))
+            uniformBlockLocations.put(blockName, getUniformBlockLocation(blockName));
+
+        bind();
+        val uniformLoc = uniformLocations.get(uniformName);
+        val blockIndex = uniformBlockLocations.get(blockName);
+        glUniformBlockBinding(id, blockIndex, uniformLoc);
+        glBindBufferBase(GL_UNIFORM_BUFFER, uniformLoc, value.id);
     }
 
     /**
