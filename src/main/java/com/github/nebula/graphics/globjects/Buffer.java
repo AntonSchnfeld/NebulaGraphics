@@ -130,6 +130,11 @@ public class Buffer extends OpenGLObject {
         return glMapBufferRange(bufferType, offset, length, readPolicy, buffer);
     }
 
+    public void unmap() {
+        bind();
+        glUnmapBuffer(bufferType);
+    }
+
     /**
      * Disposes of the buffer, releasing associated OpenGL resources.
      * This method should be called when the buffer is no longer needed to avoid memory leaks.
