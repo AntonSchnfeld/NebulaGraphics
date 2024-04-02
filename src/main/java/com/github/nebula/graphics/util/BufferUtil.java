@@ -26,7 +26,13 @@ public final class BufferUtil {
         return concatMeshes(new NativeMesh(), meshes);
     }
 
-    public static Mesh concatMeshes(Mesh concatMesh, Mesh... meshes) {
+    public static IntBuffer getDefaultIndexBuffer(int numVertices) {
+        val ebo = MemoryUtil.memAllocInt(numVertices);
+        for (int i = 0; i < numVertices; i++) ebo.put(i);
+        return ebo;
+    }
+
+    public static <T extends Mesh> T concatMeshes(T concatMesh, Mesh... meshes) {
         val len = meshes.length;
         val floatBuffers = new FloatBuffer[len];
         val indexBuffers = new IntBuffer[len];
