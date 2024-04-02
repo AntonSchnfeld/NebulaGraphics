@@ -2,7 +2,7 @@ package com.github.nebula.graphics;
 
 import com.github.nebula.graphics.data.UniformAttributes;
 import com.github.nebula.graphics.globjects.Shader;
-
+//TODO: Update documentation
 /**
  * The {@code Material} interface represents a material used for rendering objects in a graphical scene.
  * Materials define properties such as colors, textures, and shaders that determine the appearance of rendered geometry.
@@ -58,6 +58,8 @@ public interface Material extends AutoCloseable {
      * @param value the new value of the uniform attribute
      */
     void setUniform(String name, Object value);
+
+    Shader getShader();
 
     /**
      * Gets the value of a uniform attribute.
