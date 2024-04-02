@@ -12,9 +12,10 @@ import static org.lwjgl.opengl.GL42C.*;
  * @author Anton Schoenfeld
  * @since 24.03.2024
  */
-public class GPUMesh implements Mesh {
+ @Getter
+ public class GPUMesh implements Mesh {
     private final Buffer vbo, ebo;
-    private @Getter long verticesSize, indicesSize;
+    private long verticesSize, indicesSize;
 
     public GPUMesh() {
         vbo = new Buffer(GL_ARRAY_BUFFER);
