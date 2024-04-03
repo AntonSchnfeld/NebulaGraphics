@@ -1,15 +1,20 @@
 package com.github.nebula.graphics.window;
 
+import com.github.nebula.graphics.OpenGLDebugLogger;
 import com.github.nebula.graphics.data.ByteBufferedImage;
+import lombok.val;
 import org.joml.Vector2i;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWImage;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
+import org.lwjgl.opengl.GL43C;
 import org.lwjgl.opengl.GLCapabilities;
+import org.lwjgl.opengl.GLDebugMessageCallbackI;
 import org.lwjgl.system.MemoryStack;
 
 import java.nio.IntBuffer;
+import java.util.Objects;
 
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11C.*;
@@ -66,6 +71,11 @@ public class Window implements AutoCloseable {
         });
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
+        if (Objects.equals(System.getProperty("-debug"), Boolean.TRUE.toString())) {
+            glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
+        }
 
         // Create the window
         windowObject = glfwCreateWindow(width, height, title, NULL, NULL);
@@ -105,7 +115,12 @@ public class Window implements AutoCloseable {
     }
 
     public GLCapabilities createGLCapabilities() {
-        return GL.createCapabilities();
+        val capabilities = GL.createCapabilities();
+        if (Objects.equals(System.getProperty("-debug"), Boolean.TRUE.toString())) {
+            glEnable(GL43C.GL_DEBUG_OUTPUT);
+            GL43C.glDebugMessageCallback(new OpenGLDebugLogger(), 0);
+        }
+        return capabilities;
     }
 
     public void loop() {
