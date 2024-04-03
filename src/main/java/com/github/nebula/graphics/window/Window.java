@@ -64,6 +64,8 @@ public class Window implements AutoCloseable {
         windowHintsMap.forEach((hint, enabled) -> {
             glfwWindowHint(hint.glfwConstant, enabled ? GLFW_TRUE : GLFW_FALSE);
         });
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 
         // Create the window
         windowObject = glfwCreateWindow(width, height, title, NULL, NULL);
