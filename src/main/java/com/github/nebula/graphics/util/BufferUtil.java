@@ -1,6 +1,5 @@
 package com.github.nebula.graphics.util;
 
-import com.github.nebula.graphics.GPUMesh;
 import com.github.nebula.graphics.Mesh;
 import com.github.nebula.graphics.NativeMesh;
 import lombok.val;
@@ -9,7 +8,6 @@ import org.lwjgl.system.MemoryUtil;
 import java.nio.Buffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
-import java.util.stream.Stream;
 
 /**
  * @author Anton Schoenfeld
@@ -22,7 +20,7 @@ public final class BufferUtil {
         }
     }
 
-    public static Mesh concatMeshes(Mesh... meshes) {
+    public static NativeMesh concatMeshes(Mesh... meshes) {
         return concatMeshes(new NativeMesh(), meshes);
     }
 
