@@ -3,7 +3,6 @@ package com.github;
 import com.github.nebula.graphics.window.Window;
 import com.github.nebula.graphics.globjects.*;
 import com.github.nebula.graphics.globjects.texture.TextureDimensions;
-import com.github.nebula.graphics.window.WindowHint;
 import com.github.nebula.graphics.window.WindowHints;
 import lombok.val;
 import org.joml.Vector2i;
