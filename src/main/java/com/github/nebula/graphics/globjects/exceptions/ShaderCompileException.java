@@ -3,6 +3,7 @@ package com.github.nebula.graphics.globjects.exceptions;
 /**
  * Represents an exception that occurs during shader compilation.
  * This exception is typically thrown when a shader fails to compile successfully.
+ *
  * @author Anton Schoenfeld
  * @since 07.03.2024
  */

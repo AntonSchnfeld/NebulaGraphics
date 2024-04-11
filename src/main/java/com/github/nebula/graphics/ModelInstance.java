@@ -4,8 +4,6 @@ import io.reactivex.rxjava3.annotations.NonNull;
 import lombok.Getter;
 import org.joml.Matrix4f;
 
-import static java.lang.StringTemplate.STR;
-
 /**
  * @author Anton Schoenfeld
  * @since 26.03.2024

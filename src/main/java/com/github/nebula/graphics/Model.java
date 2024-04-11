@@ -9,7 +9,10 @@ import lombok.Getter;
 import lombok.val;
 import org.lwjgl.opengl.GL42C;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static org.lwjgl.opengl.GL15C.*;
 import static org.lwjgl.opengl.GL43C.GL_SHADER_STORAGE_BUFFER;

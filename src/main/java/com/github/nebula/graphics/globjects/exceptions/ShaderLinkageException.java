@@ -3,6 +3,7 @@ package com.github.nebula.graphics.globjects.exceptions;
 /**
  * Represents an exception that occurs during shader linkage.
  * This exception is typically thrown when a shader program fails to link successfully.
+ *
  * @author Anton Schoenfeld
  * @since 07.03.2024
  */

@@ -6,6 +6,7 @@ import com.github.nebula.graphics.data.VertexAttribute;
 import lombok.val;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+
 import java.util.EnumSet;
 
 class ShaderUtilTest {

@@ -8,4 +8,5 @@ import io.reactivex.rxjava3.annotations.NonNull;
  * @author Anton Schoenfeld
  * @since 22.03.2024
  */
-public record UniformAttribute(@NonNull GLDataType dataType, @NonNull String name) {}
+public record UniformAttribute(@NonNull GLDataType dataType, @NonNull String name) {
+}

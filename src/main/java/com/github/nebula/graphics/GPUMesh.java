@@ -14,8 +14,8 @@ import static org.lwjgl.opengl.GL42C.*;
  * @author Anton Schoenfeld
  * @since 24.03.2024
  */
- @Getter
- public class GPUMesh implements Mesh {
+@Getter
+public class GPUMesh implements Mesh {
     private final Buffer vbo, ebo;
     private long verticesSize, indicesSize;
 

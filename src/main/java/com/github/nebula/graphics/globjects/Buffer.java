@@ -1,7 +1,6 @@
 package com.github.nebula.graphics.globjects;
 
 import com.github.nebula.graphics.data.GLDataType;
-import lombok.Getter;
 
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;

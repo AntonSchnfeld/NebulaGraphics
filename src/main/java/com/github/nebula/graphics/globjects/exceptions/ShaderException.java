@@ -3,6 +3,7 @@ package com.github.nebula.graphics.globjects.exceptions;
 /**
  * Represents a generic exception that can occur during shader operations.
  * This exception is the base class for more specific shader-related exceptions.
+ *
  * @author Anton Schoenfeld
  * @since 07.03.2024
  */

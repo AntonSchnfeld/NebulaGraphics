@@ -11,15 +11,25 @@ import java.nio.IntBuffer;
  */
 public interface Mesh extends AutoCloseable {
     CloseableBuffer<FloatBuffer> getVerticesRange(long offset, int length, boolean write);
+
     CloseableBuffer<IntBuffer> getIndicesRange(long offset, int length, boolean write);
+
     CloseableBuffer<FloatBuffer> getVertices(boolean write);
+
     CloseableBuffer<IntBuffer> getIndices(boolean write);
+
     void setVerticesRange(long offset, @NonNull FloatBuffer buffer);
+
     void setIndicesRange(long offset, @NonNull IntBuffer buffer);
+
     void setVertices(@NonNull FloatBuffer vertices);
+
     void setIndices(@NonNull IntBuffer indices);
+
     long getVerticesSize();
+
     long getIndicesSize();
+
     /**
      * {@inheritDoc}
      */

@@ -3,6 +3,7 @@ package com.github.nebula.graphics.globjects.exceptions;
 /**
  * Indicates that a frame buffer is not complete.
  * This exception is typically thrown when the status of a frame buffer object (FBO) is not complete.
+ *
  * @author Anton Schoenfeld
  * @since 12.03.2024
  */

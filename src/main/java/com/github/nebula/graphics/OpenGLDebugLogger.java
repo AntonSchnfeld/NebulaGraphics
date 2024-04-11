@@ -4,6 +4,7 @@ import io.reactivex.rxjava3.annotations.NonNull;
 import org.lwjgl.opengl.GL43;
 import org.lwjgl.opengl.GLDebugMessageCallbackI;
 import org.lwjgl.system.MemoryUtil;
+
 import java.util.logging.Logger;
 
 /**

@@ -26,13 +26,13 @@ import static org.lwjgl.system.MemoryUtil.NULL;
 public class Window implements AutoCloseable {
     public static final int DEFAULT_WIDTH = 500;
     public static final int DEFAULT_HEIGHT = 500;
+    private final boolean resizable;
+    private final WindowHints windowHints;
     private long windowObject;
     private @Setter Runnable renderListener;
     private GLFWErrorCallback errorCallback;
     private ByteBufferedImage currentIcon;
     private @Getter String title;
-    private final boolean resizable;
-    private final WindowHints windowHints;
 
     public Window(@NonNull WindowHints windowHints, @NonNull String title, int x, int y, int width, int height) {
         if (!glfwInit())

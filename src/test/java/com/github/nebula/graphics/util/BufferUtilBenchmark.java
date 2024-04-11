@@ -2,14 +2,13 @@ package com.github.nebula.graphics.util;
 
 import com.github.nebula.graphics.Mesh;
 import com.github.nebula.graphics.NativeMesh;
+import org.lwjgl.system.MemoryUtil;
+import org.openjdk.jmh.Main;
+import org.openjdk.jmh.annotations.*;
 
 import java.io.IOException;
 import java.nio.FloatBuffer;
 import java.util.concurrent.TimeUnit;
-
-import org.lwjgl.system.MemoryUtil;
-import org.openjdk.jmh.Main;
-import org.openjdk.jmh.annotations.*;
 
 public class BufferUtilBenchmark {
     @BenchmarkMode(Mode.AverageTime)
@@ -19,6 +18,22 @@ public class BufferUtilBenchmark {
         // Define state variables
         private Mesh[] meshes;
         private Mesh concatMesh;
+
+        public static void main(String[] args) throws IOException {
+            String[] jmhArgs = {
+                    "-f", "1", // Forks
+                    "-wi", "20", // Warmup iterations
+                    "-i", "40", // Measurement iterations
+                    "-w", "100ms", // Warmup time
+                    "-r", "100ms", // Measurement time
+                    "-t", "1", // Threads
+                    "-tu", "ms", // Time unit
+                    ".*BufferUtilBenchmark.concatMeshes.*" // Regex to match your benchmark class
+            };
+
+            Main.main(jmhArgs);
+        }
+
         @Setup(Level.Iteration)
         public void setup() {
             // Initialize meshes and concatMesh
@@ -29,10 +44,12 @@ public class BufferUtilBenchmark {
             }
             concatMesh = new NativeMesh();
         }
+
         @Benchmark
         public Mesh benchmarkConcatenation() {
             return BufferUtil.concatMeshesIntoMesh(concatMesh, meshes);
         }
+
         @TearDown(Level.Iteration)
         public void close() {
             for (var mesh : meshes) {
@@ -40,6 +57,7 @@ public class BufferUtilBenchmark {
             }
             concatMesh.close();
         }
+
         // Method to create a mock mesh for testing purposes
         private Mesh createMockMesh() {
             var mesh = new NativeMesh();
@@ -58,20 +76,6 @@ public class BufferUtilBenchmark {
 
             return mesh;
         }
-        public static void main(String[] args) throws IOException {
-            String[] jmhArgs = {
-                    "-f", "1", // Forks
-                    "-wi", "20", // Warmup iterations
-                    "-i", "40", // Measurement iterations
-                    "-w", "100ms", // Warmup time
-                    "-r", "100ms", // Measurement time
-                    "-t", "1", // Threads
-                    "-tu", "ms", // Time unit
-                    ".*BufferUtilBenchmark.concatMeshes.*" // Regex to match your benchmark class
-            };
-
-            Main.main(jmhArgs);
-        }
     }
 
     @BenchmarkMode(Mode.AverageTime)
@@ -79,32 +83,7 @@ public class BufferUtilBenchmark {
     @State(Scope.Thread)
     public static class concatFloatBuffers {
         private FloatBuffer[] floatBuffers;
-        @Setup(Level.Iteration)
-        public void setup() {
-            var numFloatBuffers = 10_000;
-            floatBuffers = new FloatBuffer[numFloatBuffers];
-            for (var i = 0; i < numFloatBuffers; i++) {
-                floatBuffers[i] = createMockFloatBuffer();
-            }
-        }
-        @Benchmark
-        public FloatBuffer benchmarkConcatenation() {
-            return BufferUtil.concatFloatBuffers(floatBuffers);
-        }
-        @TearDown(Level.Iteration)
-        public void close() {
-            for (var floatBuffer : floatBuffers) {
-                MemoryUtil.memFree(floatBuffer);
-            }
-        }
-        private FloatBuffer createMockFloatBuffer() {
-            var len = 100;
-            var mock = MemoryUtil.memAllocFloat(len);
-            for (var i = 0; i < len; i++) {
-                mock.put(i);
-            }
-            return mock;
-        }
+
         public static void main(String[] args) throws IOException {
             String[] jmhArgs = {
                     "-f", "1", // Forks
@@ -118,6 +97,36 @@ public class BufferUtilBenchmark {
             };
 
             Main.main(jmhArgs);
+        }
+
+        @Setup(Level.Iteration)
+        public void setup() {
+            var numFloatBuffers = 10_000;
+            floatBuffers = new FloatBuffer[numFloatBuffers];
+            for (var i = 0; i < numFloatBuffers; i++) {
+                floatBuffers[i] = createMockFloatBuffer();
+            }
+        }
+
+        @Benchmark
+        public FloatBuffer benchmarkConcatenation() {
+            return BufferUtil.concatFloatBuffers(floatBuffers);
+        }
+
+        @TearDown(Level.Iteration)
+        public void close() {
+            for (var floatBuffer : floatBuffers) {
+                MemoryUtil.memFree(floatBuffer);
+            }
+        }
+
+        private FloatBuffer createMockFloatBuffer() {
+            var len = 100;
+            var mock = MemoryUtil.memAllocFloat(len);
+            for (var i = 0; i < len; i++) {
+                mock.put(i);
+            }
+            return mock;
         }
     }
 }

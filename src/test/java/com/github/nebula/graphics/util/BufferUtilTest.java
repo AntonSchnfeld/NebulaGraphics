@@ -1,8 +1,6 @@
 package com.github.nebula.graphics.util;
 
-import com.github.nebula.graphics.CloseableBuffer;
 import com.github.nebula.graphics.GPUMesh;
-import com.github.nebula.graphics.Mesh;
 import com.github.nebula.graphics.NativeMesh;
 import com.github.nebula.graphics.window.Window;
 import com.github.nebula.graphics.window.WindowHint;
@@ -10,7 +8,6 @@ import com.github.nebula.graphics.window.WindowHints;
 import lombok.val;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryUtil;
 
 import java.nio.Buffer;
@@ -40,7 +37,7 @@ class BufferUtilTest {
 
     @Test
     public void getCombinedBufferSize() {
-        val buffers = new Buffer[] {
+        val buffers = new Buffer[]{
                 IntBuffer.allocate(10),
                 IntBuffer.allocate(10),
                 IntBuffer.allocate(10),
@@ -62,7 +59,7 @@ class BufferUtilTest {
         val concatFloatBuffer = BufferUtil.concatFloatBuffers(floatBuffer1, floatBuffer2);
 
         val expectedValue = FloatBuffer.wrap(new float[]{
-                0, 1, 2, 3, 4, 5, 6,7, 8, 9, 10
+                0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
         });
 
         Assertions.assertEquals(concatFloatBuffer.limit(), expectedValue.limit());
@@ -115,7 +112,7 @@ class BufferUtilTest {
                 val result = BufferUtil.concatMeshes(mesh, mesh);
 
                 try (val closeableResultVertices = result.getVertices(false);
-                    val closeableExpectedVertices = expectedValue.getVertices(false)) {
+                     val closeableExpectedVertices = expectedValue.getVertices(false)) {
                     val resultVertices = closeableResultVertices.buffer();
                     val expectedVertices = closeableExpectedVertices.buffer();
                     resultVertices.position(0);

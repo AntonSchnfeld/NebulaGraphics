@@ -124,6 +124,7 @@ public class NativeMesh implements Mesh {
 
     public record NativeCloseableBuffer<T extends Buffer>(T buffer) implements CloseableBuffer<T> {
         @Override
-        public void close() {}
+        public void close() {
+        }
     }
 }

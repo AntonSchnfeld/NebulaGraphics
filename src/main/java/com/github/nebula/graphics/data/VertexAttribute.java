@@ -17,5 +17,6 @@ public record VertexAttribute(@NonNull GLDataType dataType, @NonNull String name
      * @param name     The name of the vertex attribute.
      * @param location The location index of the vertex attribute.
      */
-    public VertexAttribute {}
+    public VertexAttribute {
+    }
 }
