@@ -1,5 +1,7 @@
 package com.github.nebula.graphics.data;
 
+import io.reactivex.rxjava3.annotations.NonNull;
+
 /**
  * Represents a single vertex attribute used in a GLSL shader.
  * Each vertex attribute consists of a data type, a name, and a location.
@@ -7,7 +9,7 @@ package com.github.nebula.graphics.data;
  * @author Anton Schoenfeld
  * @since 21.03.2024
  */
-public record VertexAttribute(GLDataType dataType, String name, int location) {
+public record VertexAttribute(@NonNull GLDataType dataType, @NonNull String name, int location) {
     /**
      * Constructs a new VertexAttribute with the specified data type, name, and location.
      *

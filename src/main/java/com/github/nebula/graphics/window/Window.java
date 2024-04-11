@@ -2,6 +2,9 @@ package com.github.nebula.graphics.window;
 
 import com.github.nebula.graphics.OpenGLDebugLogger;
 import com.github.nebula.graphics.data.ByteBufferedImage;
+import io.reactivex.rxjava3.annotations.NonNull;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.val;
 import org.joml.Vector2i;
 import org.lwjgl.glfw.GLFWErrorCallback;
@@ -10,7 +13,6 @@ import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL43C;
 import org.lwjgl.opengl.GLCapabilities;
-import org.lwjgl.opengl.GLDebugMessageCallbackI;
 import org.lwjgl.system.MemoryStack;
 
 import java.nio.IntBuffer;
@@ -25,14 +27,14 @@ public class Window implements AutoCloseable {
     public static final int DEFAULT_WIDTH = 500;
     public static final int DEFAULT_HEIGHT = 500;
     private long windowObject;
-    private Runnable renderListener;
+    private @Setter Runnable renderListener;
     private GLFWErrorCallback errorCallback;
     private ByteBufferedImage currentIcon;
-    private String title;
-    private boolean resizable;
+    private @Getter String title;
+    private final boolean resizable;
     private final WindowHints windowHints;
 
-    public Window(WindowHints windowHints, final String title, final int x, final int y, final int width, final int height) {
+    public Window(@NonNull WindowHints windowHints, @NonNull String title, int x, int y, int width, int height) {
         if (!glfwInit())
             throw new IllegalStateException("Could not initialize GLFW library");
 
@@ -42,21 +44,17 @@ public class Window implements AutoCloseable {
         init(title, x, y, width, height);
     }
 
-    public Window(WindowHints windowHints, final String title, final int width, final int height) {
+    public Window(@NonNull WindowHints windowHints, @NonNull String title, int width, int height) {
         this(windowHints, title, 0, 0,
                 width, height);
         center();
     }
 
-    public Window(WindowHints windowHints, final String title) {
+    public Window(@NonNull WindowHints windowHints, @NonNull String title) {
         this(windowHints, title, DEFAULT_WIDTH, DEFAULT_HEIGHT);
     }
 
-    public void setRenderListener(Runnable renderListener) {
-        this.renderListener = renderListener;
-    }
-
-    private void init(String title, int x, int y, int width, int height) {
+    private void init(@NonNull String title, int x, int y, int width, int height) {
         // Set up an error callback. The default implementation
         // will print the error message in System.err.
         renderListener = () -> {
@@ -114,6 +112,7 @@ public class Window implements AutoCloseable {
         return windowObject;
     }
 
+    @NonNull
     public GLCapabilities createGLCapabilities() {
         val capabilities = GL.createCapabilities();
         if (Objects.equals(System.getProperty("-debug"), Boolean.TRUE.toString())) {
@@ -172,7 +171,7 @@ public class Window implements AutoCloseable {
         glfwSetWindowPos(windowObject, x, y);
     }
 
-    public void setWindowIcon(ByteBufferedImage icon) {
+    public void setWindowIcon(@NonNull ByteBufferedImage icon) {
         // Dispose of previous icon if it exists
         if (currentIcon != null) currentIcon.close();
         currentIcon = icon;
@@ -191,10 +190,12 @@ public class Window implements AutoCloseable {
         glfwImage.free();
     }
 
+    @NonNull
     public Vector2i getSize() {
         return getSize(new Vector2i());
     }
 
+    @NonNull
     public Vector2i getSize(Vector2i vector) {
         try (MemoryStack stack = stackPush()) {
             IntBuffer width = stack.mallocInt(1);
@@ -208,19 +209,17 @@ public class Window implements AutoCloseable {
         return vector;
     }
 
-    public String getTitle() {
-        return title;
-    }
-
     public void setTitle(String title) {
         this.title = title;
         glfwSetWindowTitle(windowObject, title);
     }
 
+    @NonNull
     public Vector2i getPosition() {
         return getPosition(new Vector2i());
     }
 
+    @NonNull
     public Vector2i getPosition(Vector2i position) {
         try (MemoryStack stack = stackPush()) {
             IntBuffer x = stack.mallocInt(1);
@@ -238,6 +237,7 @@ public class Window implements AutoCloseable {
     @Override
     public void close() {
         if (currentIcon != null) currentIcon.close();
+
         errorCallback.free();
         glfwDestroyWindow(windowObject);
         glfwTerminate();

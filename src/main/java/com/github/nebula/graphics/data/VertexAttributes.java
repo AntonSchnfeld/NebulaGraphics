@@ -29,7 +29,7 @@ public final class VertexAttributes implements Iterable<VertexAttribute> {
      *                                      An invalid layout occurs when the attributes are not in sequential order
      *                                      starting from location 0 or when two attributes have the same name.
      */
-    public VertexAttributes(@NonNull VertexAttribute... layout) {
+    public VertexAttributes(@NonNull VertexAttribute @NonNull ... layout) {
         validateLayout(layout);
         this.layout = Arrays.copyOf(layout, layout.length);
         var size = 0;
@@ -50,16 +50,16 @@ public final class VertexAttributes implements Iterable<VertexAttribute> {
      * @param attributes The vertex attributes to validate.
      * @throws InvalidVertexLayoutException If the layout is invalid.
      */
-    private void validateLayout(VertexAttribute[] attributes) {
+    private void validateLayout(@NonNull VertexAttribute @NonNull [] attributes) {
         val len = attributes.length;
         val names = new HashSet<String>(attributes.length);
 
         for (var i = 0; i < len; i++) {
             val cur = attributes[i];
             if (cur.location() != i)
-                throw new InvalidVertexLayoutException("Expected location " + i + " but found location " + cur.location());
+                throw new InvalidVertexLayoutException(STR."Expected location \{i} but found location \{cur.location()}");
             if (!names.add(cur.name()))
-                throw new InvalidVertexLayoutException("Duplicate name: " + cur.name());
+                throw new InvalidVertexLayoutException(STR."Duplicate name: \{cur.name()}");
         }
     }
 
@@ -108,7 +108,7 @@ public final class VertexAttributes implements Iterable<VertexAttribute> {
      * @throws IllegalArgumentException If the number of buffers does not match the number of vertex attributes in the layout.
      * @throws NullPointerException     If the vertex array or any of the buffers is null.
      */
-    public void format(@NonNull VertexArray vertexArray, Buffer @NonNull ... buffers) {
+    public void format(@NonNull VertexArray vertexArray, @NonNull Buffer @NonNull ... buffers) {
         // Calculate the stride based on the byte sizes of the data types of vertex attributes in the layout
         var stride = 0;
         for (var vertexAttrib : this) {
@@ -155,10 +155,12 @@ public final class VertexAttributes implements Iterable<VertexAttribute> {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "{" +
-                "layout=" + Arrays.toString(layout) +
-                ", size=" + size +
-                ", byteSize=" + byteSize +
-                '}';
+        return STR."""
+                \{getClass().getName()} {
+                    layout=\{Arrays.toString(layout)},
+                    size=\{size},
+                    byteSize=\{byteSize}
+                }
+                """;
     }
 }

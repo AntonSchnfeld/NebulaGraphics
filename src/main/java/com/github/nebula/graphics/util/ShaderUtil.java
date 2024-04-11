@@ -1,6 +1,7 @@
 package com.github.nebula.graphics.util;
 
 import com.github.nebula.graphics.data.*;
+import io.reactivex.rxjava3.annotations.NonNull;
 import lombok.val;
 
 import java.util.ArrayList;
@@ -29,7 +30,8 @@ public class ShaderUtil {
      * @return The vertex layout extracted from the shader source.
      * @throws IllegalArgumentException If the shader source code is invalid or contains unrecognized data types.
      */
-    public static VertexAttributes parseVertexAttributes(String vertexSource) {
+    @NonNull
+    public static VertexAttributes parseVertexAttributes(@NonNull String vertexSource) {
         val vertexSourceLines = vertexSource.split("\n");
 
         // Gets all lines where a vertex attribute is declared
@@ -46,7 +48,7 @@ public class ShaderUtil {
                 try {
                     vertexAttribList.add(new VertexAttribute(GLDataType.valueOf(dataType.toUpperCase()), attribName, loc));
                 } catch (IllegalArgumentException e) {
-                    throw new IllegalArgumentException("Unrecognized vertex attribute data type: " + dataType);
+                    throw new IllegalArgumentException(STR."Unrecognized vertex attribute data type: \{dataType}");
                 }
             }
         }
@@ -54,7 +56,8 @@ public class ShaderUtil {
         return new VertexAttributes(vertexAttribList.toArray(new VertexAttribute[0]));
     }
 
-    public static UniformAttributes parseUniformAttributes(String... shaders) {
+    @NonNull
+    public static UniformAttributes parseUniformAttributes(@NonNull String @NonNull ... shaders) {
         val lines = new ArrayList<String>();
         for (val shader : shaders)
             lines.addAll(Arrays.asList(shader.split("\n")));
@@ -69,7 +72,7 @@ public class ShaderUtil {
                 try {
                     uniformAttribList.add(new UniformAttribute(GLDataType.valueOf(dataType.toUpperCase()), attribName));
                 } catch (IllegalArgumentException e) {
-                    throw new IllegalArgumentException("Unrecognized uniform attribute data type: " + dataType);
+                    throw new IllegalArgumentException(STR."Unrecognized uniform attribute data type: \{dataType}");
                 }
             }
         }

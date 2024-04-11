@@ -1,5 +1,6 @@
 package com.github.nebula.graphics;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.lwjgl.opengl.GL43;
 import org.lwjgl.opengl.GLDebugMessageCallbackI;
 import org.lwjgl.system.MemoryUtil;
@@ -10,13 +11,13 @@ import java.util.logging.Logger;
  * @since 03.04.2024
  */
 public class OpenGLDebugLogger implements GLDebugMessageCallbackI {
-
     private static final Logger LOGGER = Logger.getLogger(OpenGLDebugLogger.class.getName());
 
     public OpenGLDebugLogger() {
         LOGGER.info("OpenGL Debug Logging enabled");
     }
 
+    @NonNull
     private static String getDebugSourceString(int source) {
         return switch (source) {
             case GL43.GL_DEBUG_SOURCE_API -> "API";
@@ -29,6 +30,7 @@ public class OpenGLDebugLogger implements GLDebugMessageCallbackI {
         };
     }
 
+    @NonNull
     private static String getDebugTypeString(int type) {
         return switch (type) {
             case GL43.GL_DEBUG_TYPE_ERROR -> "Error";
@@ -42,6 +44,7 @@ public class OpenGLDebugLogger implements GLDebugMessageCallbackI {
         };
     }
 
+    @NonNull
     private static String getDebugSeverityString(int severity) {
         return switch (severity) {
             case GL43.GL_DEBUG_SEVERITY_HIGH -> "High";

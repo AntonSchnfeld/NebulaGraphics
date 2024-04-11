@@ -15,7 +15,7 @@ public final class UniformAttributes implements Iterable<UniformAttribute> {
     public final int size, byteSize;
     private final UniformAttribute[] layout;
 
-    public UniformAttributes(@NonNull UniformAttribute... layout) {
+    public UniformAttributes(@NonNull UniformAttribute @NonNull ... layout) {
         validateLayout(layout);
         this.layout = Arrays.copyOf(layout, layout.length);
         var size = 0;
@@ -28,13 +28,12 @@ public final class UniformAttributes implements Iterable<UniformAttribute> {
         this.byteSize = byteSize;
     }
 
-    private void validateLayout(UniformAttribute[] attributes) {
-        val len = attributes.length;
+    private void validateLayout(@NonNull UniformAttribute @NonNull [] attributes) {
         val names = new HashSet<String>(attributes.length);
 
-        for (final UniformAttribute cur : attributes) {
+        for (val cur : attributes) {
             if (!names.add(cur.name()))
-                throw new InvalidVertexLayoutException("Duplicate name: " + cur.name());
+                throw new InvalidVertexLayoutException(STR."Duplicate name: \{cur.name()}");
         }
     }
 
@@ -84,10 +83,12 @@ public final class UniformAttributes implements Iterable<UniformAttribute> {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "{" +
-                "layout=" + Arrays.toString(layout) +
-                ", size=" + size +
-                ", byteSize=" + byteSize +
-                '}';
+        return STR."""
+                \{getClass().getName()} {
+                    layout=\{Arrays.toString(layout)},
+                    size=\{size},
+                    byteSize=\{byteSize}
+                }
+                """;
     }
 }

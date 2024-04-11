@@ -1,6 +1,6 @@
 package com.github.nebula.graphics.data;
 
-import lombok.NonNull;
+import io.reactivex.rxjava3.annotations.NonNull;
 import org.lwjgl.stb.STBImage;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
@@ -56,8 +56,7 @@ public record ByteBufferedImage(ByteBuffer bytes, int width, int height, int cha
             // Load image from memory using STB Image
             ByteBuffer imageBuf = STBImage.stbi_load_from_memory(buf, width, height, channels, STBI_default);
             if (imageBuf == null)
-                throw new IOException("STB Image failed to load file from memory. Failure reason: "
-                        + STBImage.stbi_failure_reason());
+                throw new IOException(STR."STB Image failed to load file from memory. Failure reason: \{STBImage.stbi_failure_reason()}");
 
             // Create a ByteBufferedImage instance with the loaded image data and metadata
             bbi = new ByteBufferedImage(imageBuf, width.get(), height.get(), channels.get());
