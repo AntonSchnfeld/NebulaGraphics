@@ -1,7 +1,6 @@
 package com.github.nebula.graphics;
 
-import com.github.nebula.graphics.globjects.Shader;
-import com.github.nebula.graphics.globjects.VertexArray;
+import io.reactivex.rxjava3.annotations.NonNull;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
@@ -11,14 +10,14 @@ import java.nio.IntBuffer;
  * @since 24.03.2024
  */
 public interface Mesh extends AutoCloseable {
-    FloatBuffer getVerticesRange(long offset, int length, boolean write);
-    IntBuffer getIndicesRange(long offset, int length, boolean write);
-    FloatBuffer getVertices(boolean write);
-    IntBuffer getIndices(boolean write);
-    void setVerticesRange(long offset, FloatBuffer buffer);
-    void setIndicesRange(long offset, IntBuffer buffer);
-    void setVertices(FloatBuffer vertices);
-    void setIndices(IntBuffer indices);
+    CloseableBuffer<FloatBuffer> getVerticesRange(long offset, int length, boolean write);
+    CloseableBuffer<IntBuffer> getIndicesRange(long offset, int length, boolean write);
+    CloseableBuffer<FloatBuffer> getVertices(boolean write);
+    CloseableBuffer<IntBuffer> getIndices(boolean write);
+    void setVerticesRange(long offset, @NonNull FloatBuffer buffer);
+    void setIndicesRange(long offset, @NonNull IntBuffer buffer);
+    void setVertices(@NonNull FloatBuffer vertices);
+    void setIndices(@NonNull IntBuffer indices);
     long getVerticesSize();
     long getIndicesSize();
     /**

@@ -1,7 +1,9 @@
 package com.github.nebula.graphics;
 
 import com.github.nebula.graphics.globjects.Buffer;
+import com.github.nebula.graphics.util.BufferUtil;
 import lombok.Getter;
+import lombok.NonNull;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
@@ -25,37 +27,38 @@ import static org.lwjgl.opengl.GL42C.*;
     }
 
     @Override
-    public FloatBuffer getVerticesRange(long offset, int length, boolean write) {
-        return vbo.mapRange(write ? GL_READ_WRITE : GL_READ_ONLY, offset, length).asFloatBuffer();
+    public GPUCloseableBuffer<FloatBuffer> getVerticesRange(long offset, int length, boolean write) {
+        return new GPUCloseableBuffer<>(vbo, vbo.mapRange(write ? GL_READ_WRITE : GL_READ_ONLY, offset, length).asFloatBuffer());
     }
 
     @Override
-    public IntBuffer getIndicesRange(long offset, int length, boolean write) {
-        return ebo.mapRange(write ? GL_READ_WRITE : GL_READ_ONLY, offset, length).asIntBuffer();
+    public GPUCloseableBuffer<IntBuffer> getIndicesRange(long offset, int length, boolean write) {
+        return new GPUCloseableBuffer<>(ebo, ebo.mapRange(write ? GL_READ_WRITE : GL_READ_ONLY, offset, length).asIntBuffer());
     }
 
     @Override
-    public FloatBuffer getVertices(boolean write) {
-        return vbo.map(write ? GL_READ_WRITE : GL_READ_ONLY).asFloatBuffer();
+    public GPUCloseableBuffer<FloatBuffer> getVertices(boolean write) {
+        return new GPUCloseableBuffer<>(vbo, vbo.map(write ? GL_READ_WRITE : GL_READ_ONLY).asFloatBuffer());
     }
 
     @Override
-    public IntBuffer getIndices(boolean write) {
-        return ebo.map(write ? GL_READ_WRITE : GL_READ_ONLY).asIntBuffer();
+    public GPUCloseableBuffer<IntBuffer> getIndices(boolean write) {
+        return new GPUCloseableBuffer<>(ebo, ebo.map(write ? GL_READ_WRITE : GL_READ_ONLY).asIntBuffer());
     }
 
     @Override
-    public void setVerticesRange(long offset, FloatBuffer buffer) {
+    public void setVerticesRange(long offset, @NonNull FloatBuffer buffer) {
         vbo.subData(buffer, offset);
     }
 
     @Override
-    public void setIndicesRange(long offset, IntBuffer buffer) {
+    public void setIndicesRange(long offset, @NonNull IntBuffer buffer) {
         ebo.subData(buffer, offset);
     }
 
     @Override
-    public void setVertices(FloatBuffer vertices) {
+    public void setVertices(@NonNull FloatBuffer vertices) {
+        BufferUtil.validateBufferNativeness(vertices);
         if (verticesSize == vertices.limit()) {
             vbo.subData(vertices, 0);
             return;
@@ -65,7 +68,8 @@ import static org.lwjgl.opengl.GL42C.*;
     }
 
     @Override
-    public void setIndices(IntBuffer indices) {
+    public void setIndices(@NonNull IntBuffer indices) {
+        BufferUtil.validateBufferNativeness(indices);
         if (indicesSize == indices.limit()) {
             ebo.subData(indices, 0);
             return;
@@ -114,5 +118,52 @@ import static org.lwjgl.opengl.GL42C.*;
         ebo.close();
         indicesSize = 0;
         verticesSize = 0;
+    }
+
+    public static class GPUCloseableBuffer<T extends java.nio.Buffer> implements CloseableBuffer<T> {
+        private final Buffer parent;
+        private final T buffer;
+
+        public GPUCloseableBuffer(Buffer parent, T buffer) {
+            this.parent = parent;
+            this.buffer = buffer;
+        }
+
+        public T buffer() {
+            return buffer;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            GPUCloseableBuffer<?> that = (GPUCloseableBuffer<?>) o;
+
+            if (!parent.equals(that.parent)) return false;
+            return buffer.equals(that.buffer);
+        }
+
+        @Override
+        public int hashCode() {
+            int result = parent.hashCode();
+            result = 31 * result + buffer.hashCode();
+            return result;
+        }
+
+        @Override
+        public String toString() {
+            return STR."""
+                    \{getClass().getName()}{
+                        parent=\{parent},
+                        buffer=\{buffer}
+                    }
+                    """;
+        }
+
+        @Override
+        public void close() {
+            parent.unmap();
+        }
     }
 }

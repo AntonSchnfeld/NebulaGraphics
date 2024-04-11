@@ -1,8 +1,16 @@
 package com.github.nebula.graphics.util;
 
+import com.github.nebula.graphics.CloseableBuffer;
+import com.github.nebula.graphics.GPUMesh;
+import com.github.nebula.graphics.Mesh;
+import com.github.nebula.graphics.NativeMesh;
+import com.github.nebula.graphics.window.Window;
+import com.github.nebula.graphics.window.WindowHint;
+import com.github.nebula.graphics.window.WindowHints;
 import lombok.val;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryUtil;
 
 import java.nio.Buffer;
@@ -10,6 +18,10 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
 class BufferUtilTest {
+
+    static {
+        System.setProperty("-debug", "true");
+    }
 
     @Test
     public void validateBufferNativeness_given_indirectBuffer() {
@@ -84,5 +96,37 @@ class BufferUtilTest {
             Assertions.assertEquals(concatIndexBuffer.get(i), expectedValue.get(i));
 
         MemoryUtil.memFree(concatIndexBuffer);
+    }
+
+    @Test
+    public void concatMeshes_given_GPUMeshes() {
+        val hints = new WindowHints().defaultHints();
+        hints.windowHint(WindowHint.VISIBLE, false);
+        try (val window = new Window(hints, getClass().getName())) {
+            window.createGLCapabilities();
+            try (val mesh = new GPUMesh();
+                 val expectedValue = new NativeMesh()) {
+                mesh.setVertices(MemoryUtil.memAllocFloat(6).put(new float[]{
+                        0, 1, 2, 3, 4, 5
+                }));
+                expectedValue.setVertices(MemoryUtil.memAllocFloat(12).put(new float[]{
+                        0, 1, 2, 3, 4, 5, 0, 1, 2, 3, 4, 5
+                }));
+                val result = BufferUtil.concatMeshes(mesh, mesh);
+
+                try (val closeableResultVertices = result.getVertices(false);
+                    val closeableExpectedVertices = expectedValue.getVertices(false)) {
+                    val resultVertices = closeableResultVertices.buffer();
+                    val expectedVertices = closeableExpectedVertices.buffer();
+                    resultVertices.position(0);
+                    expectedVertices.position(0);
+
+                    Assertions.assertEquals(resultVertices.limit(), expectedVertices.limit());
+                    for (int i = 0; i < resultVertices.limit(); i++) {
+                        Assertions.assertEquals(resultVertices.get(i), expectedVertices.get(i));
+                    }
+                }
+            }
+        }
     }
 }

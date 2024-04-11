@@ -31,7 +31,7 @@ public class BufferUtilBenchmark {
         }
         @Benchmark
         public Mesh benchmarkConcatenation() {
-            return BufferUtil.concatMeshes(concatMesh, meshes);
+            return BufferUtil.concatMeshesIntoMesh(concatMesh, meshes);
         }
         @TearDown(Level.Iteration)
         public void close() {

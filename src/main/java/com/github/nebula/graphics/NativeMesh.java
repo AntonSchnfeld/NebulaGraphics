@@ -2,8 +2,10 @@ package com.github.nebula.graphics;
 
 import com.github.nebula.graphics.util.BufferUtil;
 import lombok.Getter;
+import lombok.NonNull;
 import org.lwjgl.system.MemoryUtil;
 
+import java.nio.Buffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
@@ -24,39 +26,39 @@ public class NativeMesh implements Mesh {
     }
 
     @Override
-    public FloatBuffer getVerticesRange(long offset, int length, boolean write) {
-        if (write) return vertices.slice((int) offset, length);
-        return vertices.slice((int) offset, length).asReadOnlyBuffer();
+    public NativeCloseableBuffer<FloatBuffer> getVerticesRange(long offset, int length, boolean write) {
+        if (write) return new NativeCloseableBuffer<>(vertices.slice((int) offset, length));
+        return new NativeCloseableBuffer<>(vertices.slice((int) offset, length).asReadOnlyBuffer());
     }
 
     @Override
-    public IntBuffer getIndicesRange(long offset, int length, boolean write) {
-        if (write) return indices.slice((int) offset, length);
-        return indices.slice((int) offset, length).asReadOnlyBuffer();
+    public NativeCloseableBuffer<IntBuffer> getIndicesRange(long offset, int length, boolean write) {
+        if (write) return new NativeCloseableBuffer<>(indices.slice((int) offset, length));
+        return new NativeCloseableBuffer<>(indices.slice((int) offset, length).asReadOnlyBuffer());
     }
 
     @Override
-    public FloatBuffer getVertices(boolean write) {
-        return write ? vertices : vertices.asReadOnlyBuffer();
+    public NativeCloseableBuffer<FloatBuffer> getVertices(boolean write) {
+        return new NativeCloseableBuffer<>(write ? vertices : vertices.asReadOnlyBuffer());
     }
 
     @Override
-    public IntBuffer getIndices(boolean write) {
-        return write ? indices : indices.asReadOnlyBuffer();
+    public NativeCloseableBuffer<IntBuffer> getIndices(boolean write) {
+        return new NativeCloseableBuffer<>(write ? indices : indices.asReadOnlyBuffer());
     }
 
     @Override
-    public void setVerticesRange(long offset, FloatBuffer buffer) {
+    public void setVerticesRange(long offset, @NonNull FloatBuffer buffer) {
         vertices.put((int) offset, buffer, 0, buffer.limit());
     }
 
     @Override
-    public void setIndicesRange(long offset, IntBuffer buffer) {
+    public void setIndicesRange(long offset, @NonNull IntBuffer buffer) {
         indices.put((int) offset, buffer, 0, buffer.limit());
     }
 
     @Override
-    public void setVertices(FloatBuffer vertices) {
+    public void setVertices(@NonNull FloatBuffer vertices) {
         BufferUtil.validateBufferNativeness(vertices);
         if (vertices.limit() == verticesSize) {
             this.vertices.put(0, vertices, 0, (int) verticesSize);
@@ -68,7 +70,7 @@ public class NativeMesh implements Mesh {
     }
 
     @Override
-    public void setIndices(IntBuffer indices) {
+    public void setIndices(@NonNull IntBuffer indices) {
         BufferUtil.validateBufferNativeness(indices);
         if (indices.limit() == indicesSize) {
             this.indices.put(0, indices, 0, (int) indicesSize);
@@ -104,20 +106,12 @@ public class NativeMesh implements Mesh {
     @Override
     public String toString() {
         return STR."""
-                \{getClass().getSimpleName()}{
+                \{getClass().getName()}{
                     vertices=\{vertices},
                     indices=\{indices},
                     verticesSize=\{verticesSize},
                     indicesSize=\{indicesSize}
                 """;
-        /*""NativeMesh{" +
-                "vertices=" + vertices +
-                ", indices=" + indices +
-                ", verticesSize=" + verticesSize +
-                ", indicesSize=" + indicesSize +
-                '}';
-
-         */
     }
 
     @Override
@@ -126,5 +120,10 @@ public class NativeMesh implements Mesh {
         MemoryUtil.memFree(vertices);
         verticesSize = 0;
         indicesSize = 0;
+    }
+
+    public record NativeCloseableBuffer<T extends Buffer>(T buffer) implements CloseableBuffer<T> {
+        @Override
+        public void close() {}
     }
 }

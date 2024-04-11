@@ -58,7 +58,7 @@ public class Model implements AutoCloseable {
 
         for (val material : meshMaterialMap.keySet()) {
             val meshes = meshMaterialMap.get(material);
-            val resultMesh = BufferUtil.concatMeshes(new GPUMesh(), meshes.toArray(new Mesh[meshes.size() - 1]));
+            val resultMesh = BufferUtil.concatMeshesIntoMesh(new GPUMesh(), meshes.toArray(new Mesh[meshes.size() - 1]));
             resultMesh.setIndices(BufferUtil.getDefaultIndexBuffer((int) resultMesh.getVerticesSize()));
             val vao = new VertexArray();
             material.getShader().getVertexAttributes().format(vao, resultMesh.getVbo());
