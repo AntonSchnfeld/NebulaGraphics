@@ -3,6 +3,10 @@ package com.github.nebula.graphics;
 import lombok.AllArgsConstructor;
 import static org.lwjgl.opengl.GL43C.*;
 
+/**
+ * @author Anton Schoenfeld
+ * @since 12.04.2024
+ */
 @AllArgsConstructor
 public enum ReadPolicy {
     READ(GL_READ_ONLY, GL_MAP_READ_BIT),
