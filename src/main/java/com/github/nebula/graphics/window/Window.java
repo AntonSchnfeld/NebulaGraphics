@@ -64,9 +64,7 @@ public class Window implements AutoCloseable {
 
         // Configure GLFW
         var windowHintsMap = windowHints.windowHintsMap;
-        windowHintsMap.forEach((hint, enabled) -> {
-            glfwWindowHint(hint.glfwConstant, enabled ? GLFW_TRUE : GLFW_FALSE);
-        });
+        windowHintsMap.forEach((hint, enabled) -> glfwWindowHint(hint.glfwConstant, enabled ? GLFW_TRUE : GLFW_FALSE));
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
@@ -102,10 +100,6 @@ public class Window implements AutoCloseable {
         glfwSwapInterval(1);
 
         setPosition(x, y);
-
-        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
-        glfwShowWindow(windowObject);
     }
 
     public long getId() {
