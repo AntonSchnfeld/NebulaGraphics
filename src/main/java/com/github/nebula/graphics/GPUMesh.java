@@ -5,6 +5,7 @@ import com.github.nebula.graphics.util.BufferUtil;
 import lombok.Getter;
 import lombok.NonNull;
 
+import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
@@ -28,12 +29,12 @@ public class GPUMesh implements Mesh {
 
     @Override
     public GPUCloseableBuffer<FloatBuffer> getVerticesRange(long offset, int length, ReadPolicy readPolicy) {
-        return new GPUCloseableBuffer<>(vbo, vbo.mapRange(readPolicy.glAccessPolicy, offset, length).asFloatBuffer());
+        return new GPUCloseableBuffer<>(vbo, vbo.mapRange(readPolicy.glAccessPolicy, offset, length).order(ByteOrder.nativeOrder()).asFloatBuffer());
     }
 
     @Override
     public GPUCloseableBuffer<IntBuffer> getIndicesRange(long offset, int length, ReadPolicy readPolicy) {
-        return new GPUCloseableBuffer<>(ebo, ebo.mapRange(readPolicy.glAccessPolicy, offset, length).asIntBuffer());
+        return new GPUCloseableBuffer<>(ebo, ebo.mapRange(readPolicy.glAccessPolicy, offset, length).order(ByteOrder.nativeOrder()).asIntBuffer());
     }
 
     @Override
