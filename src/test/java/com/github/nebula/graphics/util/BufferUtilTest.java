@@ -2,6 +2,7 @@ package com.github.nebula.graphics.util;
 
 import com.github.nebula.graphics.GPUMesh;
 import com.github.nebula.graphics.NativeMesh;
+import com.github.nebula.graphics.ReadPolicy;
 import com.github.nebula.graphics.window.Window;
 import com.github.nebula.graphics.window.WindowHint;
 import com.github.nebula.graphics.window.WindowHints;
@@ -9,15 +10,19 @@ import lombok.val;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.lwjgl.system.MemoryUtil;
+import org.openjdk.jmh.annotations.Setup;
 
 import java.nio.Buffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
+import static org.lwjgl.opengl.GL43C.*;
+
 class BufferUtilTest {
 
-    static {
-        System.setProperty("-debug", "true");
+    @Setup
+    public void setup() {
+        System.setProperty("-debug", Boolean.TRUE.toString());
     }
 
     @Test
@@ -103,16 +108,37 @@ class BufferUtilTest {
             window.createGLCapabilities();
             try (val mesh = new GPUMesh();
                  val expectedValue = new NativeMesh()) {
-                mesh.setVertices(MemoryUtil.memAllocFloat(6).put(new float[]{
+                float[] vertices = {
                         0, 1, 2, 3, 4, 5
-                }));
-                expectedValue.setVertices(MemoryUtil.memAllocFloat(12).put(new float[]{
-                        0, 1, 2, 3, 4, 5, 0, 1, 2, 3, 4, 5
-                }));
+                };
+                int[] indices = {
+                        0, 1, 2, 3, 4, 5
+                };
+                {
+                    val vertexBuffer = MemoryUtil.memAllocFloat(6);
+                    vertexBuffer.put(vertices, 0, vertices.length);
+                    mesh.setVertices(vertexBuffer);
+
+                    val indexBuffer = MemoryUtil.memAllocInt(6);
+                    indexBuffer.put(indices, 0, indices.length);
+                    mesh.setIndices(indexBuffer);
+                }
+                {
+                    val vertexBuffer = MemoryUtil.memAllocFloat(12);
+                    vertexBuffer.put(vertices, 0, vertices.length);
+                    vertexBuffer.put(vertices.length, vertices, 0, vertices.length);
+                    expectedValue.setVertices(vertexBuffer);
+
+                    val indexBuffer = MemoryUtil.memAllocInt(12);
+                    indexBuffer.put(indices, 0, indices.length);
+                    indexBuffer.put(vertices.length, indices, 0, indices.length);
+                    expectedValue.setIndices(indexBuffer);
+                }
+
                 val result = BufferUtil.concatMeshes(mesh, mesh);
 
-                try (val closeableResultVertices = result.getVertices(false);
-                     val closeableExpectedVertices = expectedValue.getVertices(false)) {
+                try (val closeableResultVertices = result.getVertices(ReadPolicy.READ);
+                     val closeableExpectedVertices = expectedValue.getVertices(ReadPolicy.READ)) {
                     val resultVertices = closeableResultVertices.buffer();
                     val expectedVertices = closeableExpectedVertices.buffer();
                     resultVertices.position(0);

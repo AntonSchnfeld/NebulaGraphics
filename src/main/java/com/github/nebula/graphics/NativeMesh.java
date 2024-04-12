@@ -9,6 +9,8 @@ import java.nio.Buffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
+import static org.lwjgl.opengl.GL43C.*;
+
 /**
  * @author Anton Schoenfeld
  * @since 24.03.2024
@@ -26,25 +28,31 @@ public class NativeMesh implements Mesh {
     }
 
     @Override
-    public NativeCloseableBuffer<FloatBuffer> getVerticesRange(long offset, int length, boolean write) {
-        if (write) return new NativeCloseableBuffer<>(vertices.slice((int) offset, length));
+    public NativeCloseableBuffer<FloatBuffer> getVerticesRange(long offset, int length, ReadPolicy readPolicy) {
+        if (readPolicy.glReadPolicy == GL_READ_WRITE || readPolicy.glReadPolicy == GL_READ_ONLY)
+            return new NativeCloseableBuffer<>(vertices.slice((int) offset, length));
         return new NativeCloseableBuffer<>(vertices.slice((int) offset, length).asReadOnlyBuffer());
     }
 
     @Override
-    public NativeCloseableBuffer<IntBuffer> getIndicesRange(long offset, int length, boolean write) {
-        if (write) return new NativeCloseableBuffer<>(indices.slice((int) offset, length));
+    public NativeCloseableBuffer<IntBuffer> getIndicesRange(long offset, int length, ReadPolicy readPolicy) {
+        if (readPolicy.glReadPolicy == GL_READ_WRITE || readPolicy.glReadPolicy == GL_READ_ONLY)
+            return new NativeCloseableBuffer<>(indices.slice((int) offset, length));
         return new NativeCloseableBuffer<>(indices.slice((int) offset, length).asReadOnlyBuffer());
     }
 
     @Override
-    public NativeCloseableBuffer<FloatBuffer> getVertices(boolean write) {
-        return new NativeCloseableBuffer<>(write ? vertices : vertices.asReadOnlyBuffer());
+    public NativeCloseableBuffer<FloatBuffer> getVertices(ReadPolicy readPolicy) {
+        if (readPolicy.glReadPolicy == GL_READ_WRITE || readPolicy.glReadPolicy == GL_READ_ONLY)
+            return new NativeCloseableBuffer<>(vertices);
+        return new NativeCloseableBuffer<>(vertices.asReadOnlyBuffer());
     }
 
     @Override
-    public NativeCloseableBuffer<IntBuffer> getIndices(boolean write) {
-        return new NativeCloseableBuffer<>(write ? indices : indices.asReadOnlyBuffer());
+    public NativeCloseableBuffer<IntBuffer> getIndices(ReadPolicy readPolicy) {
+        if (readPolicy.glReadPolicy == GL_READ_WRITE || readPolicy.glReadPolicy == GL_READ_ONLY)
+            return new NativeCloseableBuffer<>(indices);
+        return new NativeCloseableBuffer<>(indices.asReadOnlyBuffer());
     }
 
     @Override

@@ -27,23 +27,23 @@ public class GPUMesh implements Mesh {
     }
 
     @Override
-    public GPUCloseableBuffer<FloatBuffer> getVerticesRange(long offset, int length, boolean write) {
-        return new GPUCloseableBuffer<>(vbo, vbo.mapRange(write ? GL_READ_WRITE : GL_READ_ONLY, offset, length).asFloatBuffer());
+    public GPUCloseableBuffer<FloatBuffer> getVerticesRange(long offset, int length, ReadPolicy readPolicy) {
+        return new GPUCloseableBuffer<>(vbo, vbo.mapRange(readPolicy.glAccessPolicy, offset, length).asFloatBuffer());
     }
 
     @Override
-    public GPUCloseableBuffer<IntBuffer> getIndicesRange(long offset, int length, boolean write) {
-        return new GPUCloseableBuffer<>(ebo, ebo.mapRange(write ? GL_READ_WRITE : GL_READ_ONLY, offset, length).asIntBuffer());
+    public GPUCloseableBuffer<IntBuffer> getIndicesRange(long offset, int length, ReadPolicy readPolicy) {
+        return new GPUCloseableBuffer<>(ebo, ebo.mapRange(readPolicy.glAccessPolicy, offset, length).asIntBuffer());
     }
 
     @Override
-    public GPUCloseableBuffer<FloatBuffer> getVertices(boolean write) {
-        return new GPUCloseableBuffer<>(vbo, vbo.map(write ? GL_READ_WRITE : GL_READ_ONLY).asFloatBuffer());
+    public GPUCloseableBuffer<FloatBuffer> getVertices(ReadPolicy readPolicy) {
+        return new GPUCloseableBuffer<>(vbo, vbo.map(readPolicy.glReadPolicy).asFloatBuffer());
     }
 
     @Override
-    public GPUCloseableBuffer<IntBuffer> getIndices(boolean write) {
-        return new GPUCloseableBuffer<>(ebo, ebo.map(write ? GL_READ_WRITE : GL_READ_ONLY).asIntBuffer());
+    public GPUCloseableBuffer<IntBuffer> getIndices(ReadPolicy readPolicy) {
+        return new GPUCloseableBuffer<>(ebo, ebo.map(readPolicy.glReadPolicy).asIntBuffer());
     }
 
     @Override
