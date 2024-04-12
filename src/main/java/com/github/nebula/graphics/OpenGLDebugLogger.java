@@ -5,6 +5,7 @@ import org.lwjgl.opengl.GL43;
 import org.lwjgl.opengl.GLDebugMessageCallbackI;
 import org.lwjgl.system.MemoryUtil;
 
+import java.util.function.Consumer;
 import java.util.logging.Logger;
 
 /**
@@ -63,7 +64,14 @@ public class OpenGLDebugLogger implements GLDebugMessageCallbackI {
         String severityStr = getDebugSeverityString(severity);
         String messageStr = MemoryUtil.memUTF8(message);
 
-        LOGGER.info(STR."""
+        Consumer<String> logMethod = switch (severityStr) {
+            case "High" -> LOGGER::severe;
+            case "Medium" -> LOGGER::warning;
+            case "Low" -> LOGGER::fine;
+            default -> LOGGER::info;
+        };
+
+        logMethod.accept(STR."""
                         OpenGL Debug Message:
                             Source: \{sourceStr},
                             Type: \{typeStr},
