@@ -14,6 +14,7 @@ import static org.lwjgl.opengl.GL33C.*;
 
 public class Main {
     public static void main(String[] args) {
+        System.setProperty("-debug", Boolean.TRUE.toString());
         var windowHints = new WindowHints().defaultHints();
         try (val window = new Window(windowHints, Main.class.getName())) {
             window.createGLCapabilities();
