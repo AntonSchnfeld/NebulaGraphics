@@ -24,17 +24,17 @@ class BufferUtilTest {
     }
 
     @Test
-    public void validateBufferNativeness_given_indirectBuffer() {
+    public void requireNative_given_indirectBuffer() {
         val indirectBuffer = IntBuffer.allocate(10);
         Assertions.assertThrows(IllegalArgumentException.class,
-                () -> BufferUtil.validateBufferNativeness(indirectBuffer));
+                () -> BufferUtil.requireNative(indirectBuffer));
     }
 
     @Test
-    public void validateBufferNativeness_given_directBuffer() {
+    public void requireNative_given_directBuffer() {
         val directBuffer = MemoryUtil.memAllocInt(10);
         Assertions.assertDoesNotThrow(() ->
-                BufferUtil.validateBufferNativeness(directBuffer));
+                BufferUtil.requireNative(directBuffer));
         MemoryUtil.memFree(directBuffer);
     }
 
@@ -100,52 +100,42 @@ class BufferUtilTest {
 
     @Test
     public void concatMeshes_given_GPUMeshes() {
-        val hints = new WindowHints().defaultHints();
-        hints.windowHint(WindowHint.VISIBLE, false);
-        try (val window = new Window(hints, getClass().getName())) {
-            window.createGLCapabilities();
-            try (val mesh = new GPUMesh();
-                 val expectedValue = new NativeMesh()) {
-                float[] vertices = {
-                        0, 1, 2, 3, 4, 5
-                };
-                int[] indices = {
-                        0, 1, 2, 3, 4, 5
-                };
-                {
-                    val vertexBuffer = MemoryUtil.memAllocFloat(6);
-                    vertexBuffer.put(vertices, 0, vertices.length);
-                    mesh.setVertices(vertexBuffer);
+        float[] vertices = {1, 2, 3,};
+        int[] indices = {1, 2, 3,};
+        float[] expectedVertices = {1, 2, 3, 1, 2, 3,};
+        int[] expectedIndices = {1, 2, 3, 5, 6, 7};
 
-                    val indexBuffer = MemoryUtil.memAllocInt(6);
-                    indexBuffer.put(indices, 0, indices.length);
-                    mesh.setIndices(indexBuffer);
+        WindowHints wh = new WindowHints().defaultHints().windowHint(WindowHint.VISIBLE, false);
+        try (Window context = new Window(wh, getClass().getName())) {
+            context.createGLCapabilities();
+            try (GPUMesh mesh = new GPUMesh(); GPUMesh mesh2 = new GPUMesh()) {
+                FloatBuffer floatBuffer = BufferUtil.newNativeFloatBuffer(vertices);
+                IntBuffer intBuffer = BufferUtil.newNativeIntBuffer(indices);
+                mesh.setVertices(floatBuffer);
+                mesh.setIndices(intBuffer);
+                mesh2.setVertices(floatBuffer);
+                mesh2.setIndices(intBuffer);
+                MemoryUtil.memFree(floatBuffer);
+                MemoryUtil.memFree(intBuffer);
+
+                NativeMesh result = BufferUtil.concatMeshes(mesh, mesh2);
+
+                Assertions.assertEquals(expectedVertices.length, result.getVerticesSize());
+                Assertions.assertEquals(expectedIndices.length, result.getIndicesSize());
+
+                try (var resultMeshVertices = result.getVertices(ReadPolicy.READ)) {
+                    FloatBuffer buf = resultMeshVertices.buffer();
+                    Assertions.assertEquals(expectedVertices.length, buf.limit());
+                    for (int i = 0; i < expectedVertices.length; i++)
+                        Assertions.assertEquals(expectedVertices[i], buf.get(i));
                 }
-                {
-                    val vertexBuffer = MemoryUtil.memAllocFloat(12);
-                    vertexBuffer.put(vertices, 0, vertices.length);
-                    vertexBuffer.put(vertices.length, vertices, 0, vertices.length);
-                    expectedValue.setVertices(vertexBuffer);
-
-                    val indexBuffer = MemoryUtil.memAllocInt(12);
-                    indexBuffer.put(indices, 0, indices.length);
-                    indexBuffer.put(vertices.length, indices, 0, indices.length);
-                    expectedValue.setIndices(indexBuffer);
-                }
-
-                val result = BufferUtil.concatMeshes(mesh, mesh);
-
-                try (val closeableResultVertices = result.getVertices(ReadPolicy.READ);
-                     val closeableExpectedVertices = expectedValue.getVertices(ReadPolicy.READ)) {
-                    val resultVertices = closeableResultVertices.buffer();
-                    val expectedVertices = closeableExpectedVertices.buffer();
-                    resultVertices.position(0);
-                    expectedVertices.position(0);
-
-                    Assertions.assertEquals(resultVertices.limit(), expectedVertices.limit());
-                    for (int i = 0; i < resultVertices.limit(); i++) {
-                        Assertions.assertEquals(resultVertices.get(i), expectedVertices.get(i));
-                    }
+                try (var resultMeshIndices = result.getIndices(ReadPolicy.READ)) {
+                    IntBuffer buf = resultMeshIndices.buffer();
+                    buf.flip();
+                    System.out.flush();
+                    Assertions.assertEquals(expectedIndices.length, buf.limit());
+                    for (int i = 0; i < expectedIndices.length; i++)
+                        Assertions.assertEquals(expectedIndices[i], buf.get(i));
                 }
             }
         }
