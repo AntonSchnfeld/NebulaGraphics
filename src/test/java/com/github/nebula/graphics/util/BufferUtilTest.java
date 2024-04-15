@@ -8,20 +8,18 @@ import com.github.nebula.graphics.window.WindowHint;
 import com.github.nebula.graphics.window.WindowHints;
 import lombok.val;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.lwjgl.system.MemoryUtil;
-import org.openjdk.jmh.annotations.Setup;
 
 import java.nio.Buffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
-import static org.lwjgl.opengl.GL43C.*;
-
 class BufferUtilTest {
 
-    @Setup
-    public void setup() {
+    @BeforeAll
+    public static void setup() {
         System.setProperty("-debug", Boolean.TRUE.toString());
     }
 
