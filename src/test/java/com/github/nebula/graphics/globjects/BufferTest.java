@@ -9,7 +9,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.util.Arrays;
 
@@ -143,11 +142,45 @@ class BufferTest implements AutoCloseable {
         for (int i = 0; i < newData.length; i++) {
             assertEquals(newData[i], byteBuf.getFloat(i * Float.BYTES));
         }
+
+        buffer.unmap();
     }
 
     @Test
     public void mapRange_given_MapReadWriteBit() {
+        int startIdx = 1;
+        int endIdx = DATA.length - 1;
+        int len = (endIdx - startIdx) * Float.BYTES;
 
+        ByteBuffer byteBuf = buffer.mapRange(GL_MAP_WRITE_BIT | GL_MAP_READ_BIT, startIdx * Float.BYTES, len);
+
+        // Confirm that the required range size was mapped
+        assertEquals(len, byteBuf.limit(), "Mapped Buffer does not have length of len");
+
+        // Compare values
+        for (int i = startIdx, j = 0; i < endIdx; i++, j++) {
+            assertEquals(DATA[i], byteBuf.getFloat(j * Float.BYTES));
+        }
+
+        // Write new values
+        float[] newData = new float[len / Float.BYTES];
+        Arrays.fill(newData, 256);
+
+        for (int i = 0; i < newData.length; i++)
+            byteBuf.putFloat(i * Float.BYTES, newData[i]);
+
+        buffer.unmap();
+
+        // Assert that new values have been properly written
+        byteBuf = buffer.mapRange(GL_MAP_READ_BIT, startIdx * Float.BYTES, len);
+
+        assertEquals(len, byteBuf.limit(), "Mapped Buffer does not have length of len");
+
+        for (int i = 0; i < newData.length; i++) {
+            assertEquals(newData[i], byteBuf.getFloat(i * Float.BYTES));
+        }
+
+        buffer.unmap();
     }
 
     @AfterEach
