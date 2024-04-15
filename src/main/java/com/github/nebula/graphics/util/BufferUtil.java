@@ -11,17 +11,16 @@ import java.nio.Buffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
-import static org.lwjgl.opengl.GL43C.*;
-
 /**
  * @author Anton Schoenfeld
  * @since 24.03.2024
  */
 public final class BufferUtil {
-    public static void validateBufferNativeness(Buffer buffer) {
+    public static <T extends Buffer> T requireNative(T buffer) {
         if (!buffer.isDirect()) {
             throw new IllegalArgumentException("Expected direct buffer, received heap buffer");
         }
+        return buffer;
     }
 
     public static FloatBuffer newNativeFloatBuffer(float[] data) {
