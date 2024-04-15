@@ -29,12 +29,12 @@ public class GPUMesh implements Mesh {
 
     @Override
     public GPUCloseableBuffer<FloatBuffer> getVerticesRange(long offset, int length, ReadPolicy readPolicy) {
-        return new GPUCloseableBuffer<>(vbo, vbo.mapRange(readPolicy.glAccessPolicy, offset, length).order(ByteOrder.nativeOrder()).asFloatBuffer());
+        return new GPUCloseableBuffer<>(vbo, vbo.mapRange(readPolicy.glAccessPolicy, offset * Float.BYTES, length * Float.BYTES).order(ByteOrder.nativeOrder()).asFloatBuffer());
     }
 
     @Override
     public GPUCloseableBuffer<IntBuffer> getIndicesRange(long offset, int length, ReadPolicy readPolicy) {
-        return new GPUCloseableBuffer<>(ebo, ebo.mapRange(readPolicy.glAccessPolicy, offset, length).order(ByteOrder.nativeOrder()).asIntBuffer());
+        return new GPUCloseableBuffer<>(ebo, ebo.mapRange(readPolicy.glAccessPolicy, offset * Integer.BYTES, length * Integer.BYTES).order(ByteOrder.nativeOrder()).asIntBuffer());
     }
 
     @Override
