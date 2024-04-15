@@ -59,7 +59,7 @@ public class GPUMesh implements Mesh {
 
     @Override
     public void setVertices(@NonNull FloatBuffer vertices) {
-        BufferUtil.validateBufferNativeness(vertices);
+        BufferUtil.requireNative(vertices);
         if (verticesSize == vertices.limit()) {
             vbo.subData(vertices, 0);
             return;
@@ -70,7 +70,7 @@ public class GPUMesh implements Mesh {
 
     @Override
     public void setIndices(@NonNull IntBuffer indices) {
-        BufferUtil.validateBufferNativeness(indices);
+        BufferUtil.requireNative(indices);
         if (indicesSize == indices.limit()) {
             ebo.subData(indices, 0);
             return;

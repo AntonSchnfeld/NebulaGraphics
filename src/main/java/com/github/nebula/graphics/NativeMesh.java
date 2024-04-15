@@ -67,7 +67,7 @@ public class NativeMesh implements Mesh {
 
     @Override
     public void setVertices(@NonNull FloatBuffer vertices) {
-        BufferUtil.validateBufferNativeness(vertices);
+        BufferUtil.requireNative(vertices);
         if (vertices.limit() == verticesSize) {
             this.vertices.put(0, vertices, 0, (int) verticesSize);
             return;
@@ -79,7 +79,7 @@ public class NativeMesh implements Mesh {
 
     @Override
     public void setIndices(@NonNull IntBuffer indices) {
-        BufferUtil.validateBufferNativeness(indices);
+        BufferUtil.requireNative(indices);
         if (indices.limit() == indicesSize) {
             this.indices.put(0, indices, 0, (int) indicesSize);
             return;
@@ -132,7 +132,6 @@ public class NativeMesh implements Mesh {
 
     public record NativeCloseableBuffer<T extends Buffer>(T buffer) implements CloseableBuffer<T> {
         @Override
-        public void close() {
-        }
+        public void close() {}
     }
 }
