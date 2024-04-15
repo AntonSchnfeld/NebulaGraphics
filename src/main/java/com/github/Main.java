@@ -1,8 +1,8 @@
 package com.github;
 
+import com.github.nebula.graphics.window.Window;
 import com.github.nebula.graphics.globjects.*;
 import com.github.nebula.graphics.globjects.texture.TextureDimensions;
-import com.github.nebula.graphics.window.Window;
 import com.github.nebula.graphics.window.WindowHints;
 import lombok.val;
 import org.joml.Vector2i;
@@ -14,7 +14,6 @@ import static org.lwjgl.opengl.GL33C.*;
 
 public class Main {
     public static void main(String[] args) {
-        System.setProperty("-debug", Boolean.TRUE.toString());
         var windowHints = new WindowHints().defaultHints();
         try (val window = new Window(windowHints, Main.class.getName())) {
             window.createGLCapabilities();
