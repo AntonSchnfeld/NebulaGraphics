@@ -42,10 +42,11 @@ class GPUMeshTest implements AutoCloseable {
     }
 
     @Test
-    public void getVerticesRange_given_ValidParams_ReadWritePolicy() {
+    public void getVerticesRange_given_ReadWritePolicy() {
+        // Define array partition
         val startIdx = 1;
         val endIdx = VERTICES.length - 2;
-        val len = endIdx - startIdx + 1;
+        val len = endIdx - startIdx;
 
         val newVertexData = new float[len];
         Arrays.fill(newVertexData, 256);
@@ -61,7 +62,7 @@ class GPUMeshTest implements AutoCloseable {
             }
 
             // Update buffer by writing new values
-            buf.put(startIdx, newVertexData, 0, len);
+            buf.put(0, newVertexData, 0, len);
         } // Try with resources automatically unmaps buffer
 
         // Confirm buffer update was successful
