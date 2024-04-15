@@ -26,7 +26,8 @@ import static org.lwjgl.system.MemoryUtil.NULL;
 public class Window implements AutoCloseable {
     public static final int DEFAULT_WIDTH = 500;
     public static final int DEFAULT_HEIGHT = 500;
-    private @Getter final boolean resizable;
+    private @Getter
+    final boolean resizable;
     private final WindowHints windowHints;
     private long windowObject;
     private @Setter Runnable renderListener;

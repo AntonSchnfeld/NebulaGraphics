@@ -9,7 +9,8 @@ import java.nio.Buffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
-import static org.lwjgl.opengl.GL43C.*;
+import static org.lwjgl.opengl.GL43C.GL_READ_ONLY;
+import static org.lwjgl.opengl.GL43C.GL_READ_WRITE;
 
 /**
  * @author Anton Schoenfeld
@@ -132,6 +133,7 @@ public class NativeMesh implements Mesh {
 
     public record NativeCloseableBuffer<T extends Buffer>(T buffer) implements CloseableBuffer<T> {
         @Override
-        public void close() {}
+        public void close() {
+        }
     }
 }
