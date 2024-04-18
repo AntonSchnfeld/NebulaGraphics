@@ -16,4 +16,5 @@ module com.github.nebula.graphics {
     requires org.lwjgl.opengl;
     requires org.lwjgl.glfw;
     requires org.lwjgl.stb;
+    requires org.slf4j;
 }
