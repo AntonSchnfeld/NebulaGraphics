@@ -42,8 +42,7 @@ class GPUMeshTest implements AutoCloseable {
     }
 
     @Test
-    public void getVerticesRange_given_ReadWritePolicy() {
-        // Define array partition
+    public void getVerticesRange_given_ValidParams_ReadWritePolicy() {
         val startIdx = 1;
         val endIdx = VERTICES.length - 2;
         val len = endIdx - startIdx;

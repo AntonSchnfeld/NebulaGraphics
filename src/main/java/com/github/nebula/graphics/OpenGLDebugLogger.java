@@ -4,16 +4,17 @@ import io.reactivex.rxjava3.annotations.NonNull;
 import org.lwjgl.opengl.GL43;
 import org.lwjgl.opengl.GLDebugMessageCallbackI;
 import org.lwjgl.system.MemoryUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.function.Consumer;
-import java.util.logging.Logger;
 
 /**
  * @author Anton Schoenfeld
  * @since 03.04.2024
  */
 public class OpenGLDebugLogger implements GLDebugMessageCallbackI {
-    private static final Logger LOGGER = Logger.getLogger(OpenGLDebugLogger.class.getName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(OpenGLDebugLogger.class);
 
     public OpenGLDebugLogger() {
         LOGGER.info("OpenGL Debug Logging enabled");
@@ -65,9 +66,8 @@ public class OpenGLDebugLogger implements GLDebugMessageCallbackI {
         String messageStr = MemoryUtil.memUTF8(message);
 
         Consumer<String> logMethod = switch (severityStr) {
-            case "High" -> LOGGER::severe;
-            case "Medium" -> LOGGER::warning;
-            case "Low" -> LOGGER::fine;
+            case "High" -> LOGGER::error;
+            case "Medium", "Low" -> LOGGER::warn;
             default -> LOGGER::info;
         };
 
