@@ -1,7 +1,9 @@
 package com.github;
 
 import com.github.nebula.graphics.globjects.*;
+import com.github.nebula.graphics.globjects.texture.TextureConfig;
 import com.github.nebula.graphics.globjects.texture.TextureDimensions;
+import com.github.nebula.graphics.globjects.texture.TextureFilter;
 import com.github.nebula.graphics.window.Window;
 import com.github.nebula.graphics.window.WindowHints;
 import lombok.val;
@@ -22,9 +24,11 @@ public class Main {
     }
 
     private static void test(Window window) {
+        int width = window.getSize().x;
+        int height = window.getSize().y;
         try (val vao = new VertexArray();
              val vbo = new Buffer(GL_ARRAY_BUFFER);
-             val shader = new Shader("""
+             val triangleTimeColorShader = new Shader("""
                      #version 330 core
                      layout(location = 0) in vec2 vPos;
                      void main() {
@@ -38,7 +42,7 @@ public class Main {
                          FragColor = vec4(sin(time), sin(time + 50), sin(time + 100), 1);
                      }
                      """);
-             val shader2 = new Shader("""
+             val postProcessColorInvertShader = new Shader("""
                      #version 330 core
                      layout(location = 0) in vec2 vPos;
                      layout(location = 1) in vec2 vUv;
@@ -57,12 +61,12 @@ public class Main {
                          FragCol = 1 - texture(uScreen, fUv);
                      }
                      """);
-             val fbo = new FrameBuffer();
-             val texture = new Texture(new TextureDimensions(window.getSize().x, window.getSize().y));
-             val rbo = new RenderBuffer(GL_DEPTH24_STENCIL8, window.getSize().x, window.getSize().y);
+             val mainRenderTarget = new FrameBuffer();
+             val mainRenderTargetColorAttachment = new Texture(new TextureDimensions(width, height), new TextureFilter(GL_NEAREST, GL_NEAREST), new TextureConfig());
+             val mainRenderTargetDepthStencilAttachment = new RenderBuffer(GL_DEPTH24_STENCIL8, width, height);
              val vertexArray = new VertexArray();
-             val buffer = new Buffer(GL_ARRAY_BUFFER);
-             val elementBuffer = new Buffer(GL_ELEMENT_ARRAY_BUFFER)) {
+             val postProcessingVbo = new Buffer(GL_ARRAY_BUFFER);
+             val postProcessingEbo = new Buffer(GL_ELEMENT_ARRAY_BUFFER)) {
 
             float[] vertices = new float[]{
                     -0.5f, -0.5f,
@@ -73,28 +77,28 @@ public class Main {
 
             vbo.bind();
             vao.vertexAttribPointer(0, 2, GL_FLOAT, 2 * Float.BYTES, 0);
-            shader.bind();
+            triangleTimeColorShader.bind();
 
-            fbo.attach(texture, GL_COLOR_ATTACHMENT0);
-            fbo.attach(rbo, GL_DEPTH_STENCIL_ATTACHMENT);
-            fbo.complete();
+            mainRenderTarget.attach(mainRenderTargetColorAttachment, GL_COLOR_ATTACHMENT0);
+            mainRenderTarget.attach(mainRenderTargetDepthStencilAttachment, GL_DEPTH_STENCIL_ATTACHMENT);
+            mainRenderTarget.complete();
 
             float[] fullScreenVertices = {
                     -1, -1, 0, 0,
                     -1, 1, 0, 1,
                     1, 1, 1, 1,
-                    1, -1, 1, 0
+                    1, -1, 1, 0,
             };
-            buffer.data(fullScreenVertices, GL_STATIC_DRAW);
+            postProcessingVbo.data(fullScreenVertices, GL_STATIC_DRAW);
             int[] indices = {
                     0, 1, 2,
-                    0, 2, 3
+                    0, 2, 3,
             };
-            elementBuffer.data(indices, GL_STATIC_DRAW);
-            buffer.bind();
+            postProcessingEbo.data(indices, GL_STATIC_DRAW);
+            postProcessingVbo.bind();
             vertexArray.vertexAttribPointer(0, 2, GL_FLOAT, 4 * Float.BYTES, 0);
             vertexArray.vertexAttribPointer(1, 2, GL_FLOAT, 4 * Float.BYTES, 2 * Float.BYTES);
-            buffer.unbind();
+            postProcessingVbo.unbind();
 
             final Vector2i windowSize = new Vector2i();
             final Vector2i windowPos = new Vector2i();
@@ -102,26 +106,26 @@ public class Main {
                 if (GLFW.glfwGetKey(window.getId(), GLFW_KEY_ESCAPE) == GLFW_PRESS) {
                     glfwSetWindowShouldClose(window.getId(), true);
                 }
-                fbo.bind();
+                mainRenderTarget.bind();
                 window.getSize(windowSize);
                 window.getPosition(windowPos);
                 glClearColor(0, 0, 0, 0);
                 glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
                 glViewport(0, 0, windowSize.x, windowSize.y);
-                shader.bind();
-                shader.uploadUniformFloat("time", (float) glfwGetTime());
+                triangleTimeColorShader.bind();
+                triangleTimeColorShader.uploadUniformFloat("time", (float) glfwGetTime());
                 vao.bind();
                 glDrawArrays(GL11C.GL_TRIANGLES, 0, 3);
-                fbo.unbind();
+                mainRenderTarget.unbind();
 
                 glClearColor(0, 0, 0, 1);
                 glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-                shader2.bind();
-                texture.bindToSlot(0);
-                shader2.uploadUniformInt("uScreen", 0);
-                shader2.uploadUniformFloat("time", (float) glfwGetTime());
+                postProcessColorInvertShader.bind();
+                mainRenderTargetColorAttachment.bindToSlot(0);
+                postProcessColorInvertShader.uploadUniformInt("uScreen", 0);
+                postProcessColorInvertShader.uploadUniformFloat("time", (float) glfwGetTime());
                 vertexArray.bind();
-                elementBuffer.bind();
+                postProcessingEbo.bind();
                 glDrawElements(GL_TRIANGLES, indices.length, GL_UNSIGNED_INT, 0);
             });
 
