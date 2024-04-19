@@ -36,8 +36,8 @@ public final class BufferUtil {
     }
 
     @NonNull
-    public static NativeMesh concatMeshes(@NonNull Mesh @NonNull ... meshes) {
-        return concatMeshesIntoMesh(new NativeMesh(), meshes);
+    public static NativeMesh batchMeshes(@NonNull Mesh @NonNull ... meshes) {
+        return batchMeshesIntoMesh(new NativeMesh(), meshes);
     }
 
     @NonNull
@@ -48,7 +48,7 @@ public final class BufferUtil {
     }
 
     @NonNull
-    public static <T extends Mesh> T concatMeshesIntoMesh(@NonNull T concatMesh, @NonNull Mesh @NonNull ... meshes) {
+    public static <T extends Mesh> T batchMeshesIntoMesh(@NonNull T concatMesh, @NonNull Mesh @NonNull ... meshes) {
         val len = meshes.length;
         val floatBuffers = new FloatBuffer[len];
         val indexBuffers = new IntBuffer[len];
@@ -61,8 +61,8 @@ public final class BufferUtil {
             }
         }
 
-        concatMesh.setVertices(concatFloatBuffers(floatBuffers));
-        concatMesh.setIndices(concatIndexBuffers(indexBuffers));
+        concatMesh.setVertices(batchFloatBuffers(floatBuffers));
+        concatMesh.setIndices(batchIndexBuffers(indexBuffers));
 
         return concatMesh;
     }
@@ -75,7 +75,7 @@ public final class BufferUtil {
     }
 
     @NonNull
-    public static FloatBuffer concatFloatBuffers(@NonNull FloatBuffer @NonNull ... buffers) {
+    public static FloatBuffer batchFloatBuffers(@NonNull FloatBuffer @NonNull ... buffers) {
         val combinedSize = getCombinedBufferSize(buffers);
         val concatBuffer = MemoryUtil.memAllocFloat(combinedSize);
 
@@ -90,7 +90,7 @@ public final class BufferUtil {
     }
 
     @NonNull
-    public static IntBuffer concatIndexBuffers(@NonNull IntBuffer @NonNull ... indexBuffers) {
+    public static IntBuffer batchIndexBuffers(@NonNull IntBuffer @NonNull ... indexBuffers) {
         val combinedSize = getCombinedBufferSize(indexBuffers);
         val concatBuffer = MemoryUtil.memAllocInt(combinedSize);
 

@@ -51,7 +51,7 @@ class BufferUtilTest {
     }
 
     @Test
-    public void concatFloatBuffers() {
+    public void batchFloatBuffers() {
         val floatBuffer1 = FloatBuffer.wrap(new float[]{
                 0, 1, 2, 3, 4, 5
         });
@@ -59,7 +59,7 @@ class BufferUtilTest {
                 6, 7, 8, 9, 10
         });
 
-        val concatFloatBuffer = BufferUtil.concatFloatBuffers(floatBuffer1, floatBuffer2);
+        val concatFloatBuffer = BufferUtil.batchFloatBuffers(floatBuffer1, floatBuffer2);
 
         val expectedValue = FloatBuffer.wrap(new float[]{
                 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
@@ -74,13 +74,13 @@ class BufferUtilTest {
     }
 
     @Test
-    public void concatIndexBuffers() {
+    public void batchIndexBuffers() {
         val quadIndexBuffer = IntBuffer.wrap(new int[]{
                 0, 1, 2,
                 0, 2, 3
         });
 
-        val concatIndexBuffer = BufferUtil.concatIndexBuffers(quadIndexBuffer, quadIndexBuffer);
+        val concatIndexBuffer = BufferUtil.batchIndexBuffers(quadIndexBuffer, quadIndexBuffer);
 
         val expectedValue = IntBuffer.wrap(new int[]{
                 0, 1, 2,
@@ -99,7 +99,7 @@ class BufferUtilTest {
     }
 
     @Test
-    public void concatMeshes_given_GPUMeshes() {
+    public void batchMeshes_given_GPUMeshes() {
         float[] vertices = {1, 2, 3,};
         int[] indices = {1, 2, 3,};
         float[] expectedVertices = {1, 2, 3, 1, 2, 3,};
@@ -118,7 +118,7 @@ class BufferUtilTest {
                 MemoryUtil.memFree(floatBuffer);
                 MemoryUtil.memFree(intBuffer);
 
-                NativeMesh result = BufferUtil.concatMeshes(mesh, mesh2);
+                NativeMesh result = BufferUtil.batchMeshes(mesh, mesh2);
 
                 Assertions.assertEquals(expectedVertices.length, result.getVerticesSize());
                 Assertions.assertEquals(expectedIndices.length, result.getIndicesSize());
