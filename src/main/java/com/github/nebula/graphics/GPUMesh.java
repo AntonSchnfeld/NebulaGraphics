@@ -16,11 +16,12 @@ import static org.lwjgl.opengl.GL42C.*;
  * @since 24.03.2024
  */
 @Getter
-public class GPUMesh implements Mesh {
+public class GPUMesh extends Mesh {
     private final Buffer vbo, ebo;
     private long verticesSize, indicesSize;
 
     public GPUMesh() {
+        super();
         vbo = new Buffer(GL_ARRAY_BUFFER);
         ebo = new Buffer(GL_ELEMENT_ARRAY_BUFFER);
         verticesSize = 0;
@@ -29,21 +30,25 @@ public class GPUMesh implements Mesh {
 
     @Override
     public GPUCloseableBuffer<FloatBuffer> getVerticesRange(long offset, int length, ReadPolicy readPolicy) {
+        if ((readPolicy.glAccessPolicy & GL_MAP_WRITE_BIT) != 0) dirty = true;
         return new GPUCloseableBuffer<>(vbo, vbo.mapRange(readPolicy.glAccessPolicy, offset * Float.BYTES, length * Float.BYTES).order(ByteOrder.nativeOrder()).asFloatBuffer());
     }
 
     @Override
     public GPUCloseableBuffer<IntBuffer> getIndicesRange(long offset, int length, ReadPolicy readPolicy) {
+        if ((readPolicy.glAccessPolicy & GL_MAP_WRITE_BIT) != 0) dirty = true;
         return new GPUCloseableBuffer<>(ebo, ebo.mapRange(readPolicy.glAccessPolicy, offset * Integer.BYTES, length * Integer.BYTES).order(ByteOrder.nativeOrder()).asIntBuffer());
     }
 
     @Override
     public GPUCloseableBuffer<FloatBuffer> getVertices(ReadPolicy readPolicy) {
+        if ((readPolicy.glAccessPolicy & GL_MAP_WRITE_BIT) != 0) dirty = true;
         return new GPUCloseableBuffer<>(vbo, vbo.map(readPolicy.glReadPolicy).asFloatBuffer());
     }
 
     @Override
     public GPUCloseableBuffer<IntBuffer> getIndices(ReadPolicy readPolicy) {
+        if ((readPolicy.glAccessPolicy & GL_MAP_WRITE_BIT) != 0) dirty = true;
         return new GPUCloseableBuffer<>(ebo, ebo.map(readPolicy.glReadPolicy).asIntBuffer());
     }
 

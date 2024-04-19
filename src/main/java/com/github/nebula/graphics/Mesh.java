@@ -9,29 +9,34 @@ import java.nio.IntBuffer;
  * @author Anton Schoenfeld
  * @since 24.03.2024
  */
-public interface Mesh extends AutoCloseable {
-    CloseableBuffer<FloatBuffer> getVerticesRange(long offset, int length, ReadPolicy readPolicy);
+public abstract class Mesh implements AutoCloseable {
+    public boolean dirty;
 
-    CloseableBuffer<IntBuffer> getIndicesRange(long offset, int length, ReadPolicy readPolicy);
+    public Mesh() {
+        dirty = false;
+    }
 
-    CloseableBuffer<FloatBuffer> getVertices(ReadPolicy readPolicy);
+    public abstract CloseableBuffer<FloatBuffer> getVerticesRange(long offset, int length, ReadPolicy readPolicy);
 
-    CloseableBuffer<IntBuffer> getIndices(ReadPolicy readPolicy);
+    public abstract CloseableBuffer<IntBuffer> getIndicesRange(long offset, int length, ReadPolicy readPolicy);
 
-    void setVerticesRange(long offset, @NonNull FloatBuffer buffer);
+    public abstract CloseableBuffer<FloatBuffer> getVertices(ReadPolicy readPolicy);
 
-    void setIndicesRange(long offset, @NonNull IntBuffer buffer);
+    public abstract CloseableBuffer<IntBuffer> getIndices(ReadPolicy readPolicy);
 
-    void setVertices(@NonNull FloatBuffer vertices);
+    public abstract void setVerticesRange(long offset, @NonNull FloatBuffer buffer);
 
-    void setIndices(@NonNull IntBuffer indices);
+    public abstract void setIndicesRange(long offset, @NonNull IntBuffer buffer);
 
-    long getVerticesSize();
+    public abstract void setVertices(@NonNull FloatBuffer vertices);
 
-    long getIndicesSize();
+    public abstract void setIndices(@NonNull IntBuffer indices);
 
+    public abstract long getVerticesSize();
+
+    public abstract long getIndicesSize();
     /**
      * {@inheritDoc}
      */
-    void close();
+    public abstract void close();
 }

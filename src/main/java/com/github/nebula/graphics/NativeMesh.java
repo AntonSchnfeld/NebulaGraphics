@@ -9,6 +9,7 @@ import java.nio.Buffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
+import static org.lwjgl.opengl.GL30C.GL_MAP_WRITE_BIT;
 import static org.lwjgl.opengl.GL43C.GL_READ_ONLY;
 import static org.lwjgl.opengl.GL43C.GL_READ_WRITE;
 
@@ -16,12 +17,13 @@ import static org.lwjgl.opengl.GL43C.GL_READ_WRITE;
  * @author Anton Schoenfeld
  * @since 24.03.2024
  */
-public class NativeMesh implements Mesh {
+public class NativeMesh extends Mesh {
     private FloatBuffer vertices;
     private IntBuffer indices;
     private @Getter long verticesSize, indicesSize;
 
     public NativeMesh() {
+        super();
         vertices = null;
         indices = null;
         verticesSize = 0;
@@ -30,29 +32,37 @@ public class NativeMesh implements Mesh {
 
     @Override
     public NativeCloseableBuffer<FloatBuffer> getVerticesRange(long offset, int length, ReadPolicy readPolicy) {
-        if (readPolicy.glReadPolicy == GL_READ_WRITE || readPolicy.glReadPolicy == GL_READ_ONLY)
+        if ((readPolicy.glAccessPolicy & GL_MAP_WRITE_BIT) != 0) {
+            dirty = true;
             return new NativeCloseableBuffer<>(vertices.slice((int) offset, length));
+        }
         return new NativeCloseableBuffer<>(vertices.slice((int) offset, length).asReadOnlyBuffer());
     }
 
     @Override
     public NativeCloseableBuffer<IntBuffer> getIndicesRange(long offset, int length, ReadPolicy readPolicy) {
-        if (readPolicy.glReadPolicy == GL_READ_WRITE || readPolicy.glReadPolicy == GL_READ_ONLY)
+        if ((readPolicy.glAccessPolicy & GL_MAP_WRITE_BIT) != 0) {
+            dirty = true;
             return new NativeCloseableBuffer<>(indices.slice((int) offset, length));
+        }
         return new NativeCloseableBuffer<>(indices.slice((int) offset, length).asReadOnlyBuffer());
     }
 
     @Override
     public NativeCloseableBuffer<FloatBuffer> getVertices(ReadPolicy readPolicy) {
-        if (readPolicy.glReadPolicy == GL_READ_WRITE || readPolicy.glReadPolicy == GL_READ_ONLY)
+        if ((readPolicy.glAccessPolicy & GL_MAP_WRITE_BIT) != 0) {
+            dirty = true;
             return new NativeCloseableBuffer<>(vertices);
+        }
         return new NativeCloseableBuffer<>(vertices.asReadOnlyBuffer());
     }
 
     @Override
     public NativeCloseableBuffer<IntBuffer> getIndices(ReadPolicy readPolicy) {
-        if (readPolicy.glReadPolicy == GL_READ_WRITE || readPolicy.glReadPolicy == GL_READ_ONLY)
+        if ((readPolicy.glAccessPolicy & GL_MAP_WRITE_BIT) != 0) {
+            dirty = true;
             return new NativeCloseableBuffer<>(indices);
+        }
         return new NativeCloseableBuffer<>(indices.asReadOnlyBuffer());
     }
 
