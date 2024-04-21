@@ -3,6 +3,7 @@ package com.github.nebula.graphics;
 import io.reactivex.rxjava3.annotations.NonNull;
 import lombok.Getter;
 import org.joml.Matrix4f;
+import org.joml.Quaternionfc;
 
 /**
  * @author Anton Schoenfeld
@@ -12,10 +13,32 @@ import org.joml.Matrix4f;
 public class ModelInstance implements AutoCloseable {
     private final Model model;
     private final Matrix4f transformationMatrix;
+    protected boolean dirty;
 
     protected ModelInstance(@NonNull Model model) {
         this.model = model;
-        transformationMatrix = new Matrix4f();
+        this.dirty = true;
+        this.transformationMatrix = new Matrix4f();
+    }
+
+    public void translate(float x, float y, float z) {
+        transformationMatrix.translate(x, y, z);
+        dirty = true;
+    }
+
+    public void scale(float x, float y, float z) {
+        transformationMatrix.scale(x, y, z);
+        dirty = true;
+    }
+
+    public void rotate(float x, float y, float z) {
+        transformationMatrix.rotateXYZ(x, y, z);
+        dirty = true;
+    }
+
+    public void rotate(Quaternionfc rotation) {
+        transformationMatrix.rotate(rotation);
+        dirty = true;
     }
 
     @Override
