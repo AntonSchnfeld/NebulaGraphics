@@ -22,14 +22,13 @@ public class Model implements AutoCloseable {
     private final @Getter Map<Material, List<Mesh>> meshMaterialMap;
     private final List<ModelInstance> instances;
     private final Buffer mat4Ssbo;
-    private GPUMesh concatMesh;
-    private int oldNumInstances;
+    private int numInstances;
 
     public Model(@NonNull Map<Material, List<Mesh>> modelMaterialMap) {
         super();
         this.mat4Ssbo = new Buffer(GL_SHADER_STORAGE_BUFFER);
         this.meshMaterialMap = new HashMap<>(modelMaterialMap);
-        this.oldNumInstances = 0;
+        this.numInstances = 0;
         this.instances = new ArrayList<>();
     }
 
@@ -40,26 +39,62 @@ public class Model implements AutoCloseable {
     public ModelInstance createInstance() {
         val instance = new ModelInstance(this);
         instances.add(instance);
+        uploadTransformationMatrices();
         return instance;
+    }
+
+    public void createInstances(ModelInstance[] instances) {
+        for (int i = 0; i < instances.length; i++) {
+            ModelInstance instance = new ModelInstance(this);
+            instances[i] = instance;
+            this.instances.add(instance);
+        }
+        uploadTransformationMatrices();
+    }
+
+    private void uploadTransformationMatrices() {
+        FloatBuffer mappedMat4Ssbo = mat4Ssbo.mapRange(GL_MAP_WRITE_BIT, 0, instances.size() * MAT4F_SIZE).asFloatBuffer();
+        // If new instances were added or instances were removed, we reupload the data
+        // so that mat4Ssbo can store all transformation matrices and does not take
+        // up unnecessary space.
+        if (numInstances != instances.size()) {
+            // Get new size and allocate data on GPU
+            numInstances = instances.size();
+            long size = (long) numInstances * MAT4F_SIZE;
+            mat4Ssbo.data(size, GL_DYNAMIC_DRAW, GLDataType.MAT4);
+            // Upload transformation matrices to mat4Ssbo
+            // Allocate array once and reuse to prevent array creation in loop
+            float[] mat4Arr = new float[MAT4F_SIZE];
+            for (int i = 0; i < numInstances; i++) {
+                // Upload transformation matrix of current instance and mark it as clean
+                // since it has just been uploaded
+                ModelInstance instance = instances.get(i);
+                mappedMat4Ssbo.put(i * MAT4F_SIZE, instance.getTransformationMatrix().get(mat4Arr));
+                instance.dirty = false;
+            }
+        }
+
+        // If any transformation matrices are dirty, we reupload them
+        float[] mat4Arr = new float[MAT4F_SIZE];
+        for (int i = 0; i < numInstances; i++) {
+            ModelInstance instance = instances.get(i);
+            if (instance.dirty) {
+                mappedMat4Ssbo.put(i * MAT4F_SIZE, instance.getTransformationMatrix().get(mat4Arr));
+                instance.dirty = false;
+            }
+        }
+
+        mat4Ssbo.unmap();
     }
 
     public void renderInstances() {
         // Reupload transformation matrices if new instances were added
-        // TODO: Handle dynamically changing transformation matrices in ModelInstances
-        // TODO: e.g. when a meteroid is moving continously, the transformation matrix
-        // TODO: has to be reuploaded
-        if (oldNumInstances != instances.size()) {
-            oldNumInstances = instances.size();
-            long size = (long) oldNumInstances * MAT4F_SIZE;
-            mat4Ssbo.data(size, GL_DYNAMIC_DRAW, GLDataType.MAT4);
-
-            FloatBuffer mappedMat4Ssbo = mat4Ssbo.mapRange(GL_MAP_WRITE_BIT, 0, (int) size).asFloatBuffer();
-            for (int i = 0; i < oldNumInstances; i++) {
-                ModelInstance instance = instances.get(i);
-                mappedMat4Ssbo.put(0, instance.getTransformationMatrix().get(new float[MAT4F_SIZE]));
-            }
-        }
+        uploadTransformationMatrices();
         // TODO: Upload vertices and indices of meshMaterialMap into concatMesh
+        for (Material mat : meshMaterialMap.keySet()) {
+            List<Mesh> meshList = meshMaterialMap.get(mat);
+
+        }
     }
 
     private boolean isDirty() {
