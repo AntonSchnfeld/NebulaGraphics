@@ -11,9 +11,15 @@ import java.nio.IntBuffer;
  */
 public abstract class Mesh implements AutoCloseable {
     public boolean dirty;
+    public Material material;
+
+    public Mesh(Material material) {
+        dirty = false;
+        this.material = material;
+    }
 
     public Mesh() {
-        dirty = false;
+        this(null);
     }
 
     public abstract CloseableBuffer<FloatBuffer> getVerticesRange(long offset, int length, ReadPolicy readPolicy);

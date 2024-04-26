@@ -10,8 +10,6 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
 import static org.lwjgl.opengl.GL30C.GL_MAP_WRITE_BIT;
-import static org.lwjgl.opengl.GL43C.GL_READ_ONLY;
-import static org.lwjgl.opengl.GL43C.GL_READ_WRITE;
 
 /**
  * @author Anton Schoenfeld
@@ -22,12 +20,16 @@ public class NativeMesh extends Mesh {
     private IntBuffer indices;
     private @Getter long verticesSize, indicesSize;
 
-    public NativeMesh() {
-        super();
+    public NativeMesh(Material material) {
+        super(material);
         vertices = null;
         indices = null;
         verticesSize = 0;
         indicesSize = 0;
+    }
+
+    public NativeMesh() {
+        this(null);
     }
 
     @Override
@@ -98,6 +100,17 @@ public class NativeMesh extends Mesh {
         MemoryUtil.memFree(this.indices);
         this.indices = indices;
         this.indicesSize = indices.limit();
+    }
+
+    /**
+     * Creates a new {@link GPUMesh} with the same material and uploads the vertices and indices of this {@link NativeMesh} into it.
+     * @return a {@link GPUMesh} that contains this meshes vertices and indices and shares its material
+     */
+    public GPUMesh toGPUMesh() {
+        GPUMesh mesh = new GPUMesh(this.material);
+        mesh.setVertices(vertices);
+        mesh.setIndices(indices);
+        return mesh;
     }
 
     @Override

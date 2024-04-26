@@ -20,12 +20,16 @@ public class GPUMesh extends Mesh {
     private final Buffer vbo, ebo;
     private long verticesSize, indicesSize;
 
-    public GPUMesh() {
-        super();
+    public GPUMesh(Material material) {
+        super(material);
         vbo = new Buffer(GL_ARRAY_BUFFER);
         ebo = new Buffer(GL_ELEMENT_ARRAY_BUFFER);
         verticesSize = 0;
         indicesSize = 0;
+    }
+
+    public GPUMesh() {
+        this(null);
     }
 
     @Override
