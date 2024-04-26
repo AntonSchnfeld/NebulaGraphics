@@ -18,16 +18,18 @@ import static org.lwjgl.opengl.GL43C.GL_SHADER_STORAGE_BUFFER;
  * @since 26.03.2024
  */
 public class Model implements AutoCloseable {
+    private final List<Model> children;
     private static final int MAT4F_SIZE = 16;
-    private final @Getter Map<Material, List<Mesh>> meshMaterialMap;
+    private final @Getter List<Mesh> meshes;
     private final List<ModelInstance> instances;
     private final Buffer mat4Ssbo;
     private int numInstances;
 
-    public Model(@NonNull Map<Material, List<Mesh>> modelMaterialMap) {
+    public Model(@NonNull List<Mesh> meshes) {
         super();
+        children = new ArrayList<>();
         this.mat4Ssbo = new Buffer(GL_SHADER_STORAGE_BUFFER);
-        this.meshMaterialMap = new HashMap<>(modelMaterialMap);
+        this.meshes = meshes;
         this.numInstances = 0;
         this.instances = new ArrayList<>();
     }
@@ -91,16 +93,15 @@ public class Model implements AutoCloseable {
         // Reupload transformation matrices if new instances were added
         uploadTransformationMatrices();
         // TODO: Upload vertices and indices of meshMaterialMap into concatMesh
-        for (Material mat : meshMaterialMap.keySet()) {
-            List<Mesh> meshList = meshMaterialMap.get(mat);
-
+        for (Mesh mesh : meshes) {
+            Material mat = mesh.material;
         }
     }
 
     private boolean isDirty() {
-        for (List<Mesh> meshes : meshMaterialMap.values())
-            for (Mesh mesh : meshes)
-                if (mesh.dirty) return true;
+        for (Mesh mesh : meshes) {
+            if (mesh.dirty) return true;
+        }
         return false;
     }
 
@@ -111,33 +112,37 @@ public class Model implements AutoCloseable {
 
         Model model = (Model) o;
 
-        if (!meshMaterialMap.equals(model.meshMaterialMap)) return false;
+        if (!meshes.equals(model.meshes)) return false;
         return instances.equals(model.instances);
     }
 
     @Override
     public int hashCode() {
-        int result = meshMaterialMap.hashCode();
+        int result = children.hashCode();
+        result = 31 * result + meshes.hashCode();
         result = 31 * result + instances.hashCode();
+        result = 31 * result + mat4Ssbo.hashCode();
+        result = 31 * result + numInstances;
         return result;
     }
 
     @Override
     public String toString() {
-        return STR."""
-                \{getClass().getSimpleName()}{
-                    meshMaterialMap=\{meshMaterialMap},
-                    instances=\{instances}
-                }
-                """;
+        return "Model{" +
+                "children=" + children +
+                ", meshes=" + meshes +
+                ", instances=" + instances +
+                ", mat4Ssbo=" + mat4Ssbo +
+                ", numInstances=" + numInstances +
+                '}';
     }
 
     @Override
     public void close() {
-        for (val material : meshMaterialMap.keySet())
-            material.close();
-        for (val meshList : meshMaterialMap.values())
-            meshList.stream().parallel().forEach(Mesh::close);
+        for (Mesh mesh : meshes) {
+            mesh.close();
+            mesh.material.close();
+        }
         mat4Ssbo.close();
     }
 }
